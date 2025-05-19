@@ -36,41 +36,5 @@ public class ProfessorAuthController {
         return ResponseEntity.badRequest().build();
     }
 
-    @PostMapping("/register")
-    public ResponseEntity register(@RequestBody ProfessorRegisterRequestDTO body) {
 
-        Optional<Professor> professor = this.repository.findByCpf(body.cpf());
-
-        if(professor.isEmpty()) {
-            Professor newProfessor = new Professor();
-            newProfessor.setId_instituicao(body.id_instituicao());
-            newProfessor.setNome(body.nome());
-            newProfessor.setSenha(passwordEncoder.encode(body.senha()));
-            newProfessor.setEmail(body.email());
-            newProfessor.setCpf(body.cpf());
-            newProfessor.setDt_nascimento(body.dt_nascimento());
-            newProfessor.setGenero(body.genero());
-            newProfessor.setTelefone(body.telefone());
-            newProfessor.setCidade(body.cidade());
-            newProfessor.setBairro(body.bairro());
-            newProfessor.setLogradouro(body.logradouro());
-            newProfessor.setNumero(body.numero());
-            newProfessor.setTurno(body.turno());
-            newProfessor.setStatus(body.status());
-            newProfessor.setFormacao(body.formacao());
-            newProfessor.setArea_atuacao(body.area_atuacao());
-            newProfessor.setDiploma(body.diploma());
-            newProfessor.setDt_admissao(body.dt_admissao());
-
-
-            System.out.println(newProfessor);
-            this.repository.save(newProfessor);
-
-            String token = this.tokenService.generateToken(newProfessor);
-            return ResponseEntity.ok(new ResponseDTO(newProfessor.getNome(), token));
-
-        }
-        return ResponseEntity.badRequest().build();
-
-    }
 }
