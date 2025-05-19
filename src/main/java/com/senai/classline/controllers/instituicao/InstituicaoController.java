@@ -1,9 +1,12 @@
 package com.senai.classline.controllers.instituicao;
 
+import com.senai.classline.domain.curso.Curso;
 import com.senai.classline.domain.professor.Professor;
+import com.senai.classline.dto.CursoDTO;
 import com.senai.classline.dto.ProfessorRegisterRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
 import com.senai.classline.infra.security.professor.ProfessorTokenService;
+import com.senai.classline.repositories.CursoRepository;
 import com.senai.classline.repositories.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,7 @@ public class InstituicaoController {
 	private final ProfessorRepository professorRepository;
 	private final PasswordEncoder professorPasswordEncoder;
 	private final ProfessorTokenService professorTokenService;
+	private final CursoRepository cursoRepository;
 
 	@GetMapping
 	public ResponseEntity<String> getUser(){
@@ -26,7 +30,7 @@ public class InstituicaoController {
 	}
 
 	@PostMapping("/professor")
-	public ResponseEntity register(@RequestBody ProfessorRegisterRequestDTO body) {
+	public ResponseEntity professorRegister(@RequestBody ProfessorRegisterRequestDTO body) {
 
 		Optional<Professor> professor = this.professorRepository.findByCpf(body.cpf());
 
@@ -63,5 +67,19 @@ public class InstituicaoController {
 
 	}
 
+	@PostMapping("/curso")
+	public ResponseEntity cursoRegister(@RequestBody CursoDTO body) {
+		Optional<Curso> curso = this.cursoRepository.findByNome(body.nome());
+		if (curso.isEmpty()) {
+			Curso newCurso = new Curso();
+			newCurso.setDescricao();
+			newCurso.setTipo();
+			newCurso.setNome();
+			newCurso.setId_instituicao();
+			newCurso.setQtde_semestre();
+
+		}
+		return null;
+	}
 
 }
