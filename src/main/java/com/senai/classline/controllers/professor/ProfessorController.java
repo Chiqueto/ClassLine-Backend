@@ -1,4 +1,4 @@
-package com.senai.classline.controllers;
+package com.senai.classline.controllers.professor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/instituicao")
-public class InstituicaoController {
-	@GetMapping
-	public ResponseEntity<String> getUser(){
-		return ResponseEntity.ok("sucesso!");
-	}
+@RequestMapping("/professor")
+public class ProfessorController {
+    @GetMapping
+    public ResponseEntity<String> getUser(){
+        return ResponseEntity.ok("sucesso!");
+    }
 }

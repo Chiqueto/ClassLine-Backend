@@ -1,4 +1,4 @@
-package com.senai.classline.infra.security;
+package com.senai.classline.infra.security.instituicao;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @Service
-public class TokenService {
+public class InstituicaoTokenService {
 
 	@Value("${api.security.token.secret}")
 	private String secret;

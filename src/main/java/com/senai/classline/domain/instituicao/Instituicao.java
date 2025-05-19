@@ -9,17 +9,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import java.util.UUID;
 
 @Entity
-@Table(name = "Instituicao")
+@Table(name = "instituicao")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Instituicao {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id_instituicao;
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private String id_instituicao;
 	private String nome;
 	private String email;
 	private String senha;

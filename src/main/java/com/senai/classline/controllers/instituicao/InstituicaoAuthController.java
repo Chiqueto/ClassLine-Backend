@@ -1,4 +1,4 @@
-package com.senai.classline.controllers;
+package com.senai.classline.controllers.instituicao;
 
 import java.util.Optional;
 
@@ -11,23 +11,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.senai.classline.domain.instituicao.Instituicao;
 import com.senai.classline.dto.InstituicaoRegisterRequestDTO;
-import com.senai.classline.dto.LoginRequestDTO;
+import com.senai.classline.dto.InstituicaoLoginRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
-import com.senai.classline.infra.security.TokenService;
+import com.senai.classline.infra.security.instituicao.InstituicaoTokenService;
 import com.senai.classline.repositories.InstituicaoRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("instituicao/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class InstituicaoAuthController {
 	private final InstituicaoRepository repository;
 	private final PasswordEncoder passwordEncoder;
-	private final TokenService tokenService;
+	private final InstituicaoTokenService tokenService;
 	
 	@PostMapping("/login")
-	public ResponseEntity login(@RequestBody LoginRequestDTO body) {
+	public ResponseEntity login(@RequestBody InstituicaoLoginRequestDTO body) {
+		System.out.println(body.toString());
 		Instituicao instituicao = this.repository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("Instituição não encontrada"));
 		if(passwordEncoder.matches(body.senha(), instituicao.getSenha())) {
 			String token = this.tokenService.generateToken(instituicao);
@@ -38,8 +39,7 @@ public class AuthController {
 	
 	@PostMapping("/register")
 	public ResponseEntity register(@RequestBody InstituicaoRegisterRequestDTO body) {
-		
-		System.out.print("Oáaaaaa");
+
 		Optional<Instituicao> instituicao = this.repository.findByEmail(body.email());
 		
 		if(instituicao.isEmpty()) {

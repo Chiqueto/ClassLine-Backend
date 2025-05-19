@@ -1,8 +1,9 @@
-package com.senai.classline.infra.security;
+package com.senai.classline.infra.security.instituicao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -16,25 +17,27 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+@Order(2) // ✅ Definindo a ordem de prioridade
+public class InstituicaoSecurityConfig {
 
 	@Autowired
 	private CustomInstituicaoDetailsService userDetailsService;
 
 	@Autowired
-	SecurityFilter securityFilter;
+	InstituicaoSecurityFilter securityFilter;
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain instituicaoSecurityFilterChain(HttpSecurity http) throws Exception {
 		http
+				.securityMatcher("/instituicao/**") // ✅ Aplicado apenas para /instituicao/**
 				.csrf(csrf -> csrf.disable())
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers(HttpMethod.POST, "/instituicao/auth/login").permitAll()
-						.requestMatchers(HttpMethod.POST, "/instituicao/auth/register").permitAll()
+						.requestMatchers("/instituicao/auth/login", "/instituicao/auth/register").permitAll()
 						.anyRequest().authenticated()
 				)
 				.addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+
 		return http.build();
 	}
 
@@ -42,10 +45,4 @@ public class SecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-		return authenticationConfiguration.getAuthenticationManager();
-	}
 }
-

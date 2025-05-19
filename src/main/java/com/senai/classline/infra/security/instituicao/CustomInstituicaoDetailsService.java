@@ -1,4 +1,4 @@
-package com.senai.classline.infra.security;
+package com.senai.classline.infra.security.instituicao;
 
 import java.util.ArrayList;
 

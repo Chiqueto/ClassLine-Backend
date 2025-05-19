@@ -1,4 +1,4 @@
-package com.senai.classline.infra.security;
+package com.senai.classline.infra.security.instituicao;
 
 import java.util.Collections;
 
@@ -20,19 +20,26 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class SecurityFilter extends OncePerRequestFilter {
+public class InstituicaoSecurityFilter extends OncePerRequestFilter {
 	@Autowired
-	TokenService tokenService;
+	InstituicaoTokenService tokenService;
 	@Autowired
 	InstituicaoRepository instituicaoRepository;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+		// ✅ Verifica se a rota começa com /instituicao
+		if (!request.getRequestURI().startsWith("/instituicao")) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
 		var token = this.recoverToken(request);
 		var login = tokenService.validateToken(token);
 
-		if(login != null){
-			Instituicao instituicao = instituicaoRepository.findByEmail(login).orElseThrow(() -> new RuntimeException("Instituicao Not Found"));
+		if (login != null) {
+			Instituicao instituicao = instituicaoRepository.findByEmail(login)
+					.orElseThrow(() -> new RuntimeException("Instituicao Not Found"));
 			var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_INSTITUICAO"));
 			var authentication = new UsernamePasswordAuthenticationToken(instituicao, null, authorities);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -40,9 +47,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
-	private String recoverToken(HttpServletRequest request){
+	private String recoverToken(HttpServletRequest request) {
 		var authHeader = request.getHeader("Authorization");
-		if(authHeader == null) return null;
+		if (authHeader == null) return null;
 		return authHeader.replace("Bearer ", "");
 	}
 }
