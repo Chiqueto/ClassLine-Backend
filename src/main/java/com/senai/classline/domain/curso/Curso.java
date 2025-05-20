@@ -15,11 +15,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Curso {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_curso;
-    private Long id_instituicao;
+    private String id_instituicao;
     private String nome;
     private String descricao;
-    private int qtde_semestre;
+    private int qtde_semestres;
+    @Enumerated(value= EnumType.STRING)
     private Tipo tipo;
 }

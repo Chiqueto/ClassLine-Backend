@@ -32,7 +32,7 @@ public class InstituicaoAuthController {
 		Instituicao instituicao = this.repository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("Instituição não encontrada"));
 		if(passwordEncoder.matches(body.senha(), instituicao.getSenha())) {
 			String token = this.tokenService.generateToken(instituicao);
-			return ResponseEntity.ok(new ResponseDTO(instituicao.getNome(), token));
+			return ResponseEntity.ok(new ResponseDTO(instituicao.getId_instituicao(), token));
 		}
 		return ResponseEntity.badRequest().build();
 	}
@@ -57,7 +57,7 @@ public class InstituicaoAuthController {
 			this.repository.save(newInstituicao);
 			
 			String token = this.tokenService.generateToken(newInstituicao);
-			return ResponseEntity.ok(new ResponseDTO(newInstituicao.getNome(), token));
+			return ResponseEntity.ok(new ResponseDTO(newInstituicao.getId_instituicao(), token));
 			
 		}
 		return ResponseEntity.badRequest().build();

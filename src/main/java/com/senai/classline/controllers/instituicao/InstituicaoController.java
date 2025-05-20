@@ -5,14 +5,21 @@ import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.dto.CursoDTO;
 import com.senai.classline.dto.ProfessorRegisterRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
+import com.senai.classline.enums.Formacao;
+import com.senai.classline.enums.StatusPessoa;
 import com.senai.classline.infra.security.professor.ProfessorTokenService;
 import com.senai.classline.repositories.CursoRepository;
 import com.senai.classline.repositories.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.Optional;
 
 @RestController
@@ -29,14 +36,14 @@ public class InstituicaoController {
 		return ResponseEntity.ok("sucesso!");
 	}
 
-	@PostMapping("/professor")
-	public ResponseEntity professorRegister(@RequestBody ProfessorRegisterRequestDTO body) {
+	@PostMapping("/{id_instituicao}/professor")
+	public ResponseEntity professorRegister(@PathVariable String id_instituicao, @RequestBody ProfessorRegisterRequestDTO body) {
 
 		Optional<Professor> professor = this.professorRepository.findByCpf(body.cpf());
 
 		if(professor.isEmpty()) {
 			Professor newProfessor = new Professor();
-			newProfessor.setId_instituicao(body.id_instituicao());
+			newProfessor.setId_instituicao(id_instituicao);
 			newProfessor.setNome(body.nome());
 			newProfessor.setSenha(professorPasswordEncoder.encode(body.senha()));
 			newProfessor.setEmail(body.email());
@@ -49,7 +56,7 @@ public class InstituicaoController {
 			newProfessor.setLogradouro(body.logradouro());
 			newProfessor.setNumero(body.numero());
 			newProfessor.setTurno(body.turno());
-			newProfessor.setStatus(body.status());
+			newProfessor.setStatus(StatusPessoa.ATIVO);
 			newProfessor.setFormacao(body.formacao());
 			newProfessor.setArea_atuacao(body.area_atuacao());
 			newProfessor.setDiploma(body.diploma());
@@ -60,26 +67,55 @@ public class InstituicaoController {
 			this.professorRepository.save(newProfessor);
 
 			String token = this.professorTokenService.generateToken(newProfessor);
-			return ResponseEntity.ok(new ResponseDTO(newProfessor.getNome(), token));
+			return ResponseEntity.ok(new ResponseDTO(newProfessor.getId_professor(),token));
 
 		}
 		return ResponseEntity.badRequest().build();
 
 	}
+		@DeleteMapping("/{id_instituicao}/professor/{id}")
+	public ResponseEntity inactiveProfessor(@PathVariable String id, @PathVariable String id_instituicao) {
+		Optional<Professor> professor = this.professorRepository.findById(id);
 
-	@PostMapping("/curso")
-	public ResponseEntity cursoRegister(@RequestBody CursoDTO body) {
-		Optional<Curso> curso = this.cursoRepository.findByNome(body.nome());
-		if (curso.isEmpty()) {
-			Curso newCurso = new Curso();
-			newCurso.setDescricao();
-			newCurso.setTipo();
-			newCurso.setNome();
-			newCurso.setId_instituicao();
-			newCurso.setQtde_semestre();
-
+		if(professor.isEmpty()){
+			return ResponseEntity.notFound().build();
 		}
-		return null;
+
+		try{
+			Professor entity = professor.get();
+				entity.setStatus(StatusPessoa.INATIVO);
+				entity.setDt_desligamento(
+						Date.from(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant())
+				);
+				professorRepository.save(entity);
+
+				return ResponseEntity.noContent().build();
+		} catch (RuntimeException e){
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+
 	}
 
+	@PostMapping("/{id_instituicao}/curso")
+	public ResponseEntity cursoRegister(@RequestBody CursoDTO body, @PathVariable String id_instituicao) {
+		Optional<Curso> curso = this.cursoRepository.findByNome(body.nome());
+		if (curso.isPresent()) {
+			return ResponseEntity.status(409).body("Curso já cadastrado.");
+		}
+		try {
+			Curso newCurso = new Curso();
+			newCurso.setDescricao(body.descricao());
+			newCurso.setTipo(body.tipo());
+			newCurso.setNome(body.nome());
+			newCurso.setId_instituicao(id_instituicao);
+			newCurso.setQtde_semestres(body.qtde_semestres());
+
+			System.out.println(newCurso);
+			this.cursoRepository.save(newCurso);
+
+			return ResponseEntity.noContent().build();
+		}catch (RuntimeException e){
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
 }

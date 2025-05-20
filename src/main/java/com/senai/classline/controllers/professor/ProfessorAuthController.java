@@ -31,7 +31,7 @@ public class ProfessorAuthController {
         Professor professor = this.repository.findByCpf(body.cpf()).orElseThrow(() -> new RuntimeException("Instituição não encontrada"));
         if(passwordEncoder.matches(body.senha(), professor.getSenha())) {
             String token = this.tokenService.generateToken(professor);
-            return ResponseEntity.ok(new ResponseDTO(professor.getNome(), token));
+            return ResponseEntity.ok(new ResponseDTO(professor.getId_professor(), token));
         }
         return ResponseEntity.badRequest().build();
     }
