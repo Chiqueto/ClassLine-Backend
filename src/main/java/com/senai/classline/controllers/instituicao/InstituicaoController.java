@@ -73,7 +73,8 @@ public class InstituicaoController {
 		return ResponseEntity.badRequest().build();
 
 	}
-		@DeleteMapping("/{id_instituicao}/professor/{id}")
+
+	@DeleteMapping("/{id_instituicao}/professor/{id}")
 	public ResponseEntity inactiveProfessor(@PathVariable String id, @PathVariable String id_instituicao) {
 		Optional<Professor> professor = this.professorRepository.findById(id);
 
@@ -90,6 +91,29 @@ public class InstituicaoController {
 				professorRepository.save(entity);
 
 				return ResponseEntity.noContent().build();
+		} catch (RuntimeException e){
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+
+	}
+
+	@PutMapping("/{id_instituicao}/professor/{id}")
+	public ResponseEntity updateProfessor(@PathVariable String id_instituicao, @PathVariable String id) {
+		Optional<Professor> professor = this.professorRepository.findById(id);
+
+		if(professor.isEmpty()){
+			return ResponseEntity.notFound().build();
+		}
+
+		try{
+			Professor entity = professor.get();
+			entity.setStatus(StatusPessoa.INATIVO);
+			entity.setDt_desligamento(
+					Date.from(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant())
+			);
+			professorRepository.save(entity);
+
+			return ResponseEntity.noContent().build();
 		} catch (RuntimeException e){
 			return ResponseEntity.badRequest().body(e.getMessage());
 		}
