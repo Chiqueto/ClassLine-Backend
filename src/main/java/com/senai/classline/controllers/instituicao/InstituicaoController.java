@@ -7,12 +7,14 @@ import com.senai.classline.dto.ProfessorRegisterRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
 import com.senai.classline.enums.Formacao;
 import com.senai.classline.enums.StatusPessoa;
-import com.senai.classline.infra.security.professor.ProfessorTokenService;
+import com.senai.classline.enums.UserType;
+import com.senai.classline.infra.security.TokenService;
 import com.senai.classline.repositories.CursoRepository;
 import com.senai.classline.repositories.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,14 +30,16 @@ import java.util.Optional;
 public class InstituicaoController {
 	private final ProfessorRepository professorRepository;
 	private final PasswordEncoder professorPasswordEncoder;
-	private final ProfessorTokenService professorTokenService;
+	private final TokenService professorTokenService;
 	private final CursoRepository cursoRepository;
 
+	@PreAuthorize("hasRole('INSTITUICAO')")
 	@GetMapping
 	public ResponseEntity<String> getUser(){
 		return ResponseEntity.ok("sucesso!");
 	}
 
+	@PreAuthorize("hasRole('INSTITUICAO')")
 	@PostMapping("/{id_instituicao}/professor")
 	public ResponseEntity professorRegister(@PathVariable String id_instituicao, @RequestBody ProfessorRegisterRequestDTO body) {
 
@@ -66,14 +70,14 @@ public class InstituicaoController {
 			System.out.println(newProfessor);
 			this.professorRepository.save(newProfessor);
 
-			String token = this.professorTokenService.generateToken(newProfessor);
+			String token = this.professorTokenService.generateToken(newProfessor, UserType.PROFESSOR);
 			return ResponseEntity.ok(new ResponseDTO(newProfessor.getId_professor(),token));
 
 		}
 		return ResponseEntity.badRequest().build();
 
 	}
-
+	@PreAuthorize("hasRole('INSTITUICAO')")
 	@DeleteMapping("/{id_instituicao}/professor/{id}")
 	public ResponseEntity inactiveProfessor(@PathVariable String id, @PathVariable String id_instituicao) {
 		Optional<Professor> professor = this.professorRepository.findById(id);
@@ -97,6 +101,7 @@ public class InstituicaoController {
 
 	}
 
+	@PreAuthorize("hasRole('INSTITUICAO')")
 	@PutMapping("/{id_instituicao}/professor/{id}")
 	public ResponseEntity updateProfessor(@PathVariable String id_instituicao, @PathVariable String id) {
 		Optional<Professor> professor = this.professorRepository.findById(id);
@@ -120,6 +125,7 @@ public class InstituicaoController {
 
 	}
 
+	@PreAuthorize("hasRole('INSTITUICAO')")
 	@PostMapping("/{id_instituicao}/curso")
 	public ResponseEntity cursoRegister(@RequestBody CursoDTO body, @PathVariable String id_instituicao) {
 		Optional<Curso> curso = this.cursoRepository.findByNome(body.nome());

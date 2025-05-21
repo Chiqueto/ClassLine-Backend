@@ -23,4 +23,9 @@ public class Professor extends Pessoa {
     private String diploma;
     private Date dt_admissao;
     private Date dt_desligamento;
+
+    @Override
+    public String getLoginIdentifier() {
+        return this.getCpf();
+    }
 }

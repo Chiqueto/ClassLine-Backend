@@ -1,5 +1,6 @@
 package com.senai.classline.domain.instituicao;
 
+import com.senai.classline.domain.commom.AuthenticatedUser;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Instituicao {
+public class Instituicao implements AuthenticatedUser {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id_instituicao;
@@ -29,4 +30,9 @@ public class Instituicao {
 	private String numero;
 	private String cidade;
 	private String telefone;
+
+	@Override
+	public String getLoginIdentifier() {
+		return this.getEmail();
+	}
 }
