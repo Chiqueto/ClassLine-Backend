@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.senai.classline.domain.instituicao.Instituicao;
-import com.senai.classline.dto.InstituicaoRegisterRequestDTO;
+import com.senai.classline.dto.InstituicaoDTO;
 import com.senai.classline.dto.InstituicaoLoginRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
 import com.senai.classline.repositories.InstituicaoRepository;
@@ -39,7 +39,7 @@ public class InstituicaoAuthController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity register(@RequestBody InstituicaoRegisterRequestDTO body) {
+	public ResponseEntity register(@RequestBody InstituicaoDTO body) {
 
 		Optional<Instituicao> instituicao = this.repository.findByEmail(body.email());
 
