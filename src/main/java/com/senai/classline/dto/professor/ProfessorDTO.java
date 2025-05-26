@@ -1,4 +1,4 @@
-package com.senai.classline.dto;
+package com.senai.classline.dto.professor;
 
 import com.senai.classline.enums.Formacao;
 import com.senai.classline.enums.StatusPessoa;

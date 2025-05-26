@@ -7,4 +7,5 @@ import com.senai.classline.domain.instituicao.Instituicao;
 
 public interface InstituicaoRepository extends JpaRepository<Instituicao, Integer> {
 	Optional<Instituicao> findByEmail(String email);
+	Optional<Instituicao> findByIdInstituicao(String idInstituicao);
 }

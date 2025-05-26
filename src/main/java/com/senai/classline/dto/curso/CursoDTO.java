@@ -1,4 +1,4 @@
-package com.senai.classline.dto;
+package com.senai.classline.dto.curso;
 
 import com.senai.classline.enums.Tipo;
 

@@ -1,21 +1,13 @@
 package com.senai.classline.controllers.professor;
 
-import com.senai.classline.domain.professor.Professor;
-import com.senai.classline.dto.ProfessorDTO;
-import com.senai.classline.enums.StatusPessoa;
+import com.senai.classline.dto.professor.ProfessorDTO;
 import com.senai.classline.repositories.ProfessorRepository;
-import com.senai.classline.service.ProfessorService;
 import com.senai.classline.service.impl.ProfessorServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/professor")
@@ -48,9 +40,9 @@ public class ProfessorController {
     }
 
     @PreAuthorize("hasRole('INSTITUICAO')")
-    @PutMapping("/{id_instituicao}/{id_professor}")
-    public ResponseEntity updateProfessor(@PathVariable String id_instituicao, @PathVariable String id_professor) {
-        Optional<Professor> professor = this.professorRepository.findById(id_professor);
+    @PutMapping("/{id_professor}")
+    public ResponseEntity updateProfessor( @PathVariable String id_professor) {
+        //Optional<Professor> professor = this.professorRepository.findById(id_professor);
 
 //		if(professor.isEmpty()){
 //			return ResponseEntity.notFound().build();

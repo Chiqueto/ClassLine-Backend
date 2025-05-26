@@ -1,8 +1,5 @@
 package com.senai.classline.controllers.instituicao;
 
-import java.util.Optional;
-
-import com.senai.classline.dto.ProfessorDTO;
 import com.senai.classline.enums.UserType;
 import com.senai.classline.infra.security.TokenService;
 import com.senai.classline.service.impl.InstituicaoServiceImpl;
@@ -14,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.senai.classline.domain.instituicao.Instituicao;
-import com.senai.classline.dto.InstituicaoDTO;
-import com.senai.classline.dto.InstituicaoLoginRequestDTO;
+import com.senai.classline.dto.instituicao.InstituicaoDTO;
+import com.senai.classline.dto.instituicao.InstituicaoLoginRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
 import com.senai.classline.repositories.InstituicaoRepository;
 

@@ -2,7 +2,7 @@ package com.senai.classline.service.impl;
 
 import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.dto.PessoaLoginRequestDTO;
-import com.senai.classline.dto.ProfessorDTO;
+import com.senai.classline.dto.professor.ProfessorDTO;
 import com.senai.classline.dto.ResponseDTO;
 import com.senai.classline.enums.StatusPessoa;
 import com.senai.classline.enums.UserType;

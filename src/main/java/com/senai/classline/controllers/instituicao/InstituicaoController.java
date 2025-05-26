@@ -1,27 +1,18 @@
 package com.senai.classline.controllers.instituicao;
 
 import com.senai.classline.domain.curso.Curso;
-import com.senai.classline.domain.professor.Professor;
-import com.senai.classline.dto.CursoDTO;
-import com.senai.classline.dto.ProfessorDTO;
-import com.senai.classline.dto.ResponseDTO;
-import com.senai.classline.enums.StatusPessoa;
-import com.senai.classline.enums.UserType;
-import com.senai.classline.infra.security.TokenService;
+import com.senai.classline.dto.curso.CursoDTO;
+import com.senai.classline.dto.instituicao.InstituicaoEditarDTO;
 import com.senai.classline.repositories.CursoRepository;
 import com.senai.classline.repositories.ProfessorRepository;
+import com.senai.classline.service.InstituicaoService;
 import com.senai.classline.service.ProfessorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.Optional;
 
 @RestController
@@ -29,7 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class InstituicaoController {
 	private final ProfessorRepository professorRepository;
-	private final ProfessorService professorService;
+	private final InstituicaoService service;
 	private final CursoRepository cursoRepository;
 
 	@PreAuthorize("hasRole('INSTITUICAO')")
@@ -38,7 +29,12 @@ public class InstituicaoController {
 		return ResponseEntity.ok("sucesso!");
 	}
 
-
+	@PreAuthorize("hasRole('INSTITUICAO')")
+	@PutMapping("/{idInstituicao}")
+	public ResponseEntity editarInstituicao(@PathVariable String idInstituicao, @RequestBody InstituicaoEditarDTO body){
+		this.service.editar(idInstituicao, body);
+		return ResponseEntity.status(HttpStatus.OK).body("Instituição atualizada com sucesso!");
+	}
 
 	@PreAuthorize("hasRole('INSTITUICAO')")
 	@PostMapping("/{id_instituicao}/curso")

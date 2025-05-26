@@ -2,6 +2,7 @@ package com.senai.classline.infra;
 
 import com.senai.classline.exceptions.instituicao.InstituicaoAlreadyExists;
 import com.senai.classline.exceptions.global.LoginFail;
+import com.senai.classline.exceptions.instituicao.InstituicaoNotFound;
 import com.senai.classline.exceptions.professor.ProfessorAlreadyExists;
 import com.senai.classline.exceptions.professor.ProfessorChangeUnauthorized;
 import com.senai.classline.exceptions.professor.ProfessorNotFound;
@@ -40,5 +41,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Você não tem permissão para alterar esse professor!");
     }
 
+    @ExceptionHandler(InstituicaoNotFound.class)
+    private ResponseEntity<String> InstituicaoNotFound (InstituicaoNotFound exception){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Instituição não encontrada!");
+    }
 
 }
