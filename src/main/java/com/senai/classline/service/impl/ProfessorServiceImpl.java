@@ -8,6 +8,7 @@ import com.senai.classline.enums.StatusPessoa;
 import com.senai.classline.enums.UserType;
 import com.senai.classline.exceptions.global.LoginFail;
 import com.senai.classline.exceptions.professor.ProfessorAlreadyExists;
+import com.senai.classline.exceptions.professor.ProfessorChangeUnauthorized;
 import com.senai.classline.exceptions.professor.ProfessorNotFound;
 import com.senai.classline.infra.security.TokenService;
 import com.senai.classline.repositories.ProfessorRepository;
@@ -57,7 +58,7 @@ public class ProfessorServiceImpl implements ProfessorService {
         }
 
         if (!professor.getIdInstituicao().equals(id_instituicao)) {
-            throw new RuntimeException("Você não tem permissão para alterar esse professor");
+            throw new ProfessorChangeUnauthorized();
         }
 
         professor.setStatus(StatusPessoa.INATIVO);

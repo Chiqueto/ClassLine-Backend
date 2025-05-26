@@ -3,6 +3,7 @@ package com.senai.classline.infra;
 import com.senai.classline.exceptions.instituicao.InstituicaoAlreadyExists;
 import com.senai.classline.exceptions.global.LoginFail;
 import com.senai.classline.exceptions.professor.ProfessorAlreadyExists;
+import com.senai.classline.exceptions.professor.ProfessorChangeUnauthorized;
 import com.senai.classline.exceptions.professor.ProfessorNotFound;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
@@ -33,4 +34,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<String> professorNotFound (ProfessorNotFound exception){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Professor não encontrado!");
     }
+
+    @ExceptionHandler(ProfessorChangeUnauthorized.class)
+    private ResponseEntity<String> professorChangeUnauthorized (ProfessorChangeUnauthorized exception){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Você não tem permissão para alterar esse professor!");
+    }
+
+
 }
