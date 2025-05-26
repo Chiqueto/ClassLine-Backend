@@ -4,6 +4,7 @@ import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.dto.PessoaLoginRequestDTO;
 import com.senai.classline.dto.professor.ProfessorDTO;
 import com.senai.classline.dto.ResponseDTO;
+import com.senai.classline.dto.professor.ProfessorEditarDTO;
 import com.senai.classline.enums.StatusPessoa;
 import com.senai.classline.enums.UserType;
 import com.senai.classline.exceptions.global.LoginFail;
@@ -45,7 +46,28 @@ public class ProfessorServiceImpl implements ProfessorService {
     }
 
     @Override
-    public Professor editar(Professor professor) {
+    public Professor editar(String idProfessor, ProfessorEditarDTO body) {
+        Professor professor = professorRepository.findByIdProfessor(idProfessor).get();
+
+        if(professor == null) {
+            throw new ProfessorNotFound();
+        }
+
+        if(body.email() != null && professorRepository.findByEmail(body.email()).isPresent()){
+            throw new ProfessorAlreadyExists("Professor já cadastrado com esse e-mail!");
+        }else{professor.setEmail(body.email());}
+        if(body.bairro() != null){ professor.setBairro(body.bairro());}
+        if(body.area_atuacao() != null){ professor.setArea_atuacao(body.area_atuacao());}
+        if(body.cidade() != null){ professor.setCidade(body.cidade());}
+        if(body.dt_admissao() != null){ professor.setDt_admissao(body.dt_admissao());}
+        if(body.formacao() != null){ professor.setFormacao(body.formacao());}
+        if(body.genero() != null){ professor.setGenero(body.genero());}
+        if(body.logradouro() != null){ professor.setLogradouro(body.logradouro());}
+        if(body.numero() != null){ professor.setNumero(body.numero());}
+        if(body.senha() != null){ professorPasswordEncoder.encode(body.senha());}
+        if(body.telefone() != null){ professor.setTelefone(body.telefone());}
+        if(body.turno() != null){ professor.setTurno(body.turno());}
+
         return null;
     }
 
