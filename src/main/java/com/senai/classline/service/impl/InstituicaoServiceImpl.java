@@ -30,6 +30,7 @@ public class InstituicaoServiceImpl implements InstituicaoService {
 
 
         if (instituicao.isPresent()) {
+            System.out.println("Passou aqui");
             throw new InstituicaoAlreadyExists();
         }
         Instituicao newInstituicao = new Instituicao();

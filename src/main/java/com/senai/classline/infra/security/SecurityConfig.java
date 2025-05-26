@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,7 +29,7 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain instituicaoSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.disable()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
                 .securityMatcher("/instituicao/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -45,7 +46,7 @@ public class SecurityConfig {
     @Order(2)
     public SecurityFilterChain professorSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.disable()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
                 .securityMatcher("/professor/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
