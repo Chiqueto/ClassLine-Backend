@@ -28,6 +28,7 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain instituicaoSecurity(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.disable()) // ou cors(Customizer.withDefaults())
                 .securityMatcher("/instituicao/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -39,12 +40,12 @@ public class SecurityConfig {
 
         return http.build();
     }
-
     // 🔐 Configuração para Professores
     @Bean
     @Order(2)
     public SecurityFilterChain professorSecurity(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.disable()) // ou cors(Customizer.withDefaults())
                 .securityMatcher("/professor/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
