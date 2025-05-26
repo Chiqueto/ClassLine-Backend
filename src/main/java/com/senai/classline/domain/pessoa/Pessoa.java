@@ -4,6 +4,7 @@ package com.senai.classline.domain.pessoa;
 import com.senai.classline.domain.commom.AuthenticatedUser;
 import com.senai.classline.enums.StatusPessoa;
 import com.senai.classline.enums.Turno;
+import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,8 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public abstract class Pessoa implements AuthenticatedUser {
-    private String id_instituicao;
+    @Column (name = "id_instituicao")
+    private String idInstituicao;
     private String nome;
     private String email;
     private String senha;

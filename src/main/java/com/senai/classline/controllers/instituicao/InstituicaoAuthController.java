@@ -42,7 +42,7 @@ public class InstituicaoAuthController {
 		final Instituicao instituicao = instituicaoService.salvar(body);
 
 		String token = tokenService.generateToken(instituicao, UserType.INSTITUICAO);
-		return ResponseEntity.ok(new ResponseDTO(instituicao.getId_instituicao(), token));
+		return ResponseEntity.ok(new ResponseDTO(instituicao.getIdInstituicao(), token));
 
 
 	}

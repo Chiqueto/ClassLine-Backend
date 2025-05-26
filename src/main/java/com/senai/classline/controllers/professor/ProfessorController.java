@@ -5,6 +5,7 @@ import com.senai.classline.dto.ProfessorDTO;
 import com.senai.classline.enums.StatusPessoa;
 import com.senai.classline.repositories.ProfessorRepository;
 import com.senai.classline.service.ProfessorService;
+import com.senai.classline.service.impl.ProfessorServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProfessorController {
     private final ProfessorRepository professorRepository;
-    private final ProfessorService professorService;
+    private final ProfessorServiceImpl professorService;
 
     @GetMapping
     public ResponseEntity<String> getUser(){
@@ -31,12 +32,8 @@ public class ProfessorController {
     @PreAuthorize("hasRole('INSTITUICAO')")
     @PostMapping("/{id_instituicao}/")
     public ResponseEntity professorRegister(@PathVariable String id_instituicao, @RequestBody ProfessorDTO body) {
-        try{
-            professorService.salvar(body, id_instituicao);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        }catch(RuntimeException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        professorService.salvar(body, id_instituicao);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PreAuthorize("hasRole('INSTITUICAO')")
@@ -45,12 +42,9 @@ public class ProfessorController {
             @PathVariable String id_instituicao,
             @PathVariable String id_professor
     ) {
-        try {
-            professorService.inativar(id_professor, id_instituicao);
-            return ResponseEntity.noContent().build(); // HTTP 204
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        professorService.inativar(id_professor, id_instituicao);
+        return ResponseEntity.noContent().build(); // HTTP 204
+
     }
 
     @PreAuthorize("hasRole('INSTITUICAO')")

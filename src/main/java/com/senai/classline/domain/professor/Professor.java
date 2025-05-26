@@ -17,7 +17,8 @@ import java.util.Date;
 public class Professor extends Pessoa {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id_professor;
+    @Column(name = "id_professor")
+    private String idProfessor;
     private Formacao formacao;
     private String area_atuacao;
     private String diploma;

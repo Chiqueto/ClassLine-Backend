@@ -52,7 +52,7 @@ public class InstituicaoController {
 			newCurso.setDescricao(body.descricao());
 			newCurso.setTipo(body.tipo());
 			newCurso.setNome(body.nome());
-			newCurso.setId_instituicao(id_instituicao);
+			newCurso.setIdInstituicao(id_instituicao);
 			newCurso.setQtde_semestres(body.qtde_semestres());
 
 			System.out.println(newCurso);

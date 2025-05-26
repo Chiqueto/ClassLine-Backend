@@ -6,7 +6,7 @@ import com.senai.classline.dto.InstituicaoLoginRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
 import com.senai.classline.enums.UserType;
 import com.senai.classline.exceptions.instituicao.InstituicaoAlreadyExists;
-import com.senai.classline.exceptions.instituicao.InstituicaoLoginFail;
+import com.senai.classline.exceptions.global.LoginFail;
 import com.senai.classline.infra.security.TokenService;
 import com.senai.classline.repositories.InstituicaoRepository;
 import com.senai.classline.service.InstituicaoService;
@@ -57,11 +57,11 @@ public class InstituicaoServiceImpl implements InstituicaoService {
         Optional<Instituicao> instituicao = repository.findByEmail(loginRequest.email());
 
         if (instituicao.isEmpty() || !passwordEncoder.matches(loginRequest.senha(), instituicao.get().getSenha())){
-            throw new InstituicaoLoginFail();
+            throw new LoginFail();
         }
 
         String token = tokenService.generateToken(instituicao.get(), UserType.INSTITUICAO);
-        return new ResponseDTO(instituicao.get().getId_instituicao(), token);
+        return new ResponseDTO(instituicao.get().getIdInstituicao(), token);
     }
 }
 

@@ -1,11 +1,7 @@
 package com.senai.classline.domain.instituicao;
 
 import com.senai.classline.domain.commom.AuthenticatedUser;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +17,8 @@ import java.util.UUID;
 public class Instituicao implements AuthenticatedUser {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
-	private String id_instituicao;
+	@Column(name = "id_instituicao")
+	private String idInstituicao;
 	private String nome;
 	private String email;
 	private String senha;

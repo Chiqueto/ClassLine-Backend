@@ -1,8 +1,14 @@
 package com.senai.classline.service.impl;
 
 import com.senai.classline.domain.professor.Professor;
+import com.senai.classline.dto.PessoaLoginRequestDTO;
 import com.senai.classline.dto.ProfessorDTO;
+import com.senai.classline.dto.ResponseDTO;
 import com.senai.classline.enums.StatusPessoa;
+import com.senai.classline.enums.UserType;
+import com.senai.classline.exceptions.global.LoginFail;
+import com.senai.classline.exceptions.professor.ProfessorAlreadyExists;
+import com.senai.classline.exceptions.professor.ProfessorNotFound;
 import com.senai.classline.infra.security.TokenService;
 import com.senai.classline.repositories.ProfessorRepository;
 import com.senai.classline.service.ProfessorService;
@@ -28,12 +34,13 @@ public class ProfessorServiceImpl implements ProfessorService {
 
         if(professor.isEmpty()) {
             Professor newProfessor = converteDTO(professorDTO);
-            newProfessor.setId_instituicao(id_instituicao);
+            newProfessor.setIdInstituicao(id_instituicao);
+//            String token = this.professorTokenService.generateToken(newProfessor, UserType.PROFESSOR);
             return this.professorRepository.save(newProfessor);
         }
 
-        throw new RuntimeException("Professor já está cadastrado!");
-//        String token = this.professorTokenService.generateToken(newProfessor, UserType.PROFESSOR);
+        throw new ProfessorAlreadyExists();
+
     }
 
     @Override
@@ -43,10 +50,13 @@ public class ProfessorServiceImpl implements ProfessorService {
 
     @Override
     public Professor inativar(String id_professor, String id_instituicao) {
-        Professor professor = this.professorRepository.findById(id_professor)
-                .orElseThrow(() -> new RuntimeException("Professor não encontrado"));
+        Professor professor = this.professorRepository.findById(id_professor).get();
 
-        if (!professor.getId_instituicao().equals(id_instituicao)) {
+        if(professor == null){
+            throw  new ProfessorNotFound();
+        }
+
+        if (!professor.getIdInstituicao().equals(id_instituicao)) {
             throw new RuntimeException("Você não tem permissão para alterar esse professor");
         }
 
@@ -86,4 +96,18 @@ public class ProfessorServiceImpl implements ProfessorService {
 
         return newProfessor;
     }
+
+    @Override
+    public ResponseDTO login(PessoaLoginRequestDTO body) {
+        Optional<Professor> professor = professorRepository.findByCpf(body.cpf());
+
+        if (professor.isEmpty() || !professorPasswordEncoder.matches(body.senha(), professor.get().getSenha())){
+            throw new LoginFail();
+        }
+
+        String token = professorTokenService.generateToken(professor.get(), UserType.PROFESSOR);
+        return new ResponseDTO(professor.get().getIdInstituicao(), token);
+    }
 }
+
+

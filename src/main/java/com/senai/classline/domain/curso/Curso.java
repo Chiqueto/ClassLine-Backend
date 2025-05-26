@@ -16,8 +16,10 @@ import lombok.Setter;
 public class Curso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_curso;
-    private String id_instituicao;
+    @Column(name = "id_curso")
+    private Long idCurso;
+    @Column(name = "id_instituicao")
+    private String idInstituicao;
     private String nome;
     private String descricao;
     private int qtde_semestres;
