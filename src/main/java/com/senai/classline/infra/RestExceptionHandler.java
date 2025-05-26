@@ -2,11 +2,14 @@ package com.senai.classline.infra;
 
 import com.senai.classline.exceptions.instituicao.InstituicaoAlreadyExists;
 import com.senai.classline.exceptions.instituicao.InstituicaoLoginFail;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+@Hidden
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InstituicaoAlreadyExists.class)
