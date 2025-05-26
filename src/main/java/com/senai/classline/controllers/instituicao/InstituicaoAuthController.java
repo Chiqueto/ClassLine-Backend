@@ -2,8 +2,10 @@ package com.senai.classline.controllers.instituicao;
 
 import java.util.Optional;
 
+import com.senai.classline.dto.ProfessorDTO;
 import com.senai.classline.enums.UserType;
 import com.senai.classline.infra.security.TokenService;
+import com.senai.classline.service.impl.InstituicaoServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,42 +28,22 @@ public class InstituicaoAuthController {
 	private final InstituicaoRepository repository;
 	private final PasswordEncoder passwordEncoder;
 	private final TokenService tokenService;
+	private final InstituicaoServiceImpl instituicaoService;
 
 	@PostMapping("/login")
 	public ResponseEntity login(@RequestBody InstituicaoLoginRequestDTO body) {
-		System.out.println(body.toString());
-		Instituicao instituicao = this.repository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("Instituição não encontrada"));
-		if(passwordEncoder.matches(body.senha(), instituicao.getSenha())) {
-			String token = tokenService.generateToken(instituicao, UserType.INSTITUICAO);
-			return ResponseEntity.ok(new ResponseDTO(instituicao.getId_instituicao(), token));
-		}
-		return ResponseEntity.badRequest().build();
+		ResponseDTO response = instituicaoService.login(body);
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/register")
 	public ResponseEntity register(@RequestBody InstituicaoDTO body) {
 
-		Optional<Instituicao> instituicao = this.repository.findByEmail(body.email());
+		final Instituicao instituicao = instituicaoService.salvar(body);
 
-		if(instituicao.isEmpty()) {
-			Instituicao newInstituicao = new Instituicao();
-			newInstituicao.setNome(body.nome());
-			newInstituicao.setSenha(passwordEncoder.encode(body.senha()));
-			newInstituicao.setEmail(body.email());
-			newInstituicao.setTelefone(body.telefone());
-			newInstituicao.setCidade(body.cidade());
-			newInstituicao.setBairro(body.bairro());
-			newInstituicao.setLogradouro(body.logradouro());
-			newInstituicao.setNumero(body.numero());
+		String token = tokenService.generateToken(instituicao, UserType.INSTITUICAO);
+		return ResponseEntity.ok(new ResponseDTO(instituicao.getId_instituicao(), token));
 
-			System.out.println(newInstituicao);
-			this.repository.save(newInstituicao);
-
-			String token = tokenService.generateToken(newInstituicao, UserType.INSTITUICAO);
-			return ResponseEntity.ok(new ResponseDTO(newInstituicao.getId_instituicao(), token));
-
-		}
-		return ResponseEntity.badRequest().build();
 
 	}
 }

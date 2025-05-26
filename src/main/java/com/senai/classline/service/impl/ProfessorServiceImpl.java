@@ -3,12 +3,10 @@ package com.senai.classline.service.impl;
 import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.dto.ProfessorDTO;
 import com.senai.classline.enums.StatusPessoa;
-import com.senai.classline.enums.UserType;
 import com.senai.classline.infra.security.TokenService;
 import com.senai.classline.repositories.ProfessorRepository;
 import com.senai.classline.service.ProfessorService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

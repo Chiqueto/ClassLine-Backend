@@ -2,6 +2,11 @@ package com.senai.classline.service.impl;
 
 import com.senai.classline.domain.instituicao.Instituicao;
 import com.senai.classline.dto.InstituicaoDTO;
+import com.senai.classline.dto.InstituicaoLoginRequestDTO;
+import com.senai.classline.dto.ResponseDTO;
+import com.senai.classline.enums.UserType;
+import com.senai.classline.exceptions.instituicao.InstituicaoAlreadyExists;
+import com.senai.classline.exceptions.instituicao.InstituicaoLoginFail;
 import com.senai.classline.infra.security.TokenService;
 import com.senai.classline.repositories.InstituicaoRepository;
 import com.senai.classline.service.InstituicaoService;
@@ -22,8 +27,10 @@ public class InstituicaoServiceImpl implements InstituicaoService {
     public Instituicao salvar(InstituicaoDTO body) {
         Optional<Instituicao> instituicao = this.repository.findByEmail(body.email());
 
+
+
         if (instituicao.isPresent()) {
-            throw new RuntimeException("Instituição já existe");
+            throw new InstituicaoAlreadyExists();
         }
         Instituicao newInstituicao = new Instituicao();
         newInstituicao.setNome(body.nome());
@@ -43,5 +50,17 @@ public class InstituicaoServiceImpl implements InstituicaoService {
         public Instituicao editar () {
             return null;
         }
+
+    @Override
+    public ResponseDTO login(InstituicaoLoginRequestDTO loginRequest) {
+        Optional<Instituicao> instituicao = repository.findByEmail(loginRequest.email());
+
+        if (instituicao.isEmpty() || !passwordEncoder.matches(loginRequest.senha(), instituicao.get().getSenha())){
+            throw new InstituicaoLoginFail();
+        }
+
+        String token = tokenService.generateToken(instituicao.get(), UserType.INSTITUICAO);
+        return new ResponseDTO(instituicao.get().getId_instituicao(), token);
     }
+}
 
