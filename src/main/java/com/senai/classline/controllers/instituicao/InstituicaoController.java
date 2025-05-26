@@ -39,55 +39,6 @@ public class InstituicaoController {
 	}
 
 
-	@PreAuthorize("hasRole('INSTITUICAO')")
-	@PostMapping("/{id_instituicao}/professor")
-	public ResponseEntity professorRegister(@PathVariable String id_instituicao, @RequestBody ProfessorDTO body) {
-		try{
-			professorService.salvar(body, id_instituicao);
-			return ResponseEntity.status(HttpStatus.CREATED).build();
-		}catch(RuntimeException e){
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-	}
-
-	@PreAuthorize("hasRole('INSTITUICAO')")
-	@DeleteMapping("/{id_instituicao}/professor/{id}")
-	public ResponseEntity<?> inactiveProfessor(
-			@PathVariable String id,
-			@PathVariable String id_instituicao
-	) {
-		try {
-			professorService.inativar(id, id_instituicao);
-			return ResponseEntity.noContent().build(); // HTTP 204
-		} catch (RuntimeException e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-		}
-	}
-
-
-	@PreAuthorize("hasRole('INSTITUICAO')")
-	@PutMapping("/{id_instituicao}/professor/{id}")
-	public ResponseEntity updateProfessor(@PathVariable String id_instituicao, @PathVariable String id) {
-		Optional<Professor> professor = this.professorRepository.findById(id);
-
-		if(professor.isEmpty()){
-			return ResponseEntity.notFound().build();
-		}
-
-		try{
-			Professor entity = professor.get();
-			entity.setStatus(StatusPessoa.INATIVO);
-			entity.setDt_desligamento(
-					Date.from(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant())
-			);
-			professorRepository.save(entity);
-
-			return ResponseEntity.noContent().build();
-		} catch (RuntimeException e){
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-
-	}
 
 	@PreAuthorize("hasRole('INSTITUICAO')")
 	@PostMapping("/{id_instituicao}/curso")

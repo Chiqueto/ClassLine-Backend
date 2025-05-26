@@ -28,40 +28,53 @@ public class ProfessorController {
         return ResponseEntity.ok("sucesso!");
     }
 
+    @PreAuthorize("hasRole('INSTITUICAO')")
+    @PostMapping("/{id_instituicao}/")
+    public ResponseEntity professorRegister(@PathVariable String id_instituicao, @RequestBody ProfessorDTO body) {
+        try{
+            professorService.salvar(body, id_instituicao);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }catch(RuntimeException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
-//    @PreAuthorize("hasRole('INSTITUICAO')")
-//    @PostMapping("/{id_instituicao}/professor")
-//    public ResponseEntity professorRegister(@PathVariable String id_instituicao, @RequestBody ProfessorDTO body) {
-//        try{
-//            professorService.salvar(body, id_instituicao);
-//            return ResponseEntity.status(HttpStatus.CREATED).build();
-//        }catch(RuntimeException e){
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
+    @PreAuthorize("hasRole('INSTITUICAO')")
+    @DeleteMapping("/{id_instituicao}/{id_professor}")
+    public ResponseEntity<?> inactiveProfessor(
+            @PathVariable String id_instituicao,
+            @PathVariable String id_professor
+    ) {
+        try {
+            professorService.inativar(id_professor, id_instituicao);
+            return ResponseEntity.noContent().build(); // HTTP 204
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasRole('INSTITUICAO')")
+    @PutMapping("/{id_instituicao}/{id_professor}")
+    public ResponseEntity updateProfessor(@PathVariable String id_instituicao, @PathVariable String id_professor) {
+        Optional<Professor> professor = this.professorRepository.findById(id_professor);
+
+//		if(professor.isEmpty()){
+//			return ResponseEntity.notFound().build();
+//		}
 //
-//    @PreAuthorize("hasRole('INSTITUICAO')")
-//    @DeleteMapping("/{id_instituicao}/professor/{id}")
-//    public ResponseEntity inactiveProfessor(@PathVariable String id, @PathVariable String id_instituicao) {
-//        Optional<Professor> professor = this.professorRepository.findById(id);
+//		try{
+//			Professor entity = professor.get();
+//			entity.setStatus(StatusPessoa.INATIVO);
+//			entity.setDt_desligamento(
+//					Date.from(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant())
+//			);
+//			professorRepository.save(entity);
 //
-//        if(professor.isEmpty()){
-//            return ResponseEntity.notFound().build();
-//        }
-//
-//        try{
-//            Professor entity = professor.get();
-//            entity.setStatus(StatusPessoa.INATIVO);
-//            entity.setDt_desligamento(
-//                    Date.from(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant())
-//            );
-//            professorRepository.save(entity);
-//
-//            return ResponseEntity.noContent().build();
-//        } catch (RuntimeException e){
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//
-//    }
+//			return ResponseEntity.noContent().build();
+//		} catch (RuntimeException e){
+//			return ResponseEntity.badRequest().body(e.getMessage());
+//		}
+        return null;
+    }
 
 }
