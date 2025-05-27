@@ -43,8 +43,8 @@ public class CursoServiceImpl implements CursoService {
     }
 
     @Override
-    public Curso editar(Long idCurso, CursoEditarDTO body, String id_instituicao) {
-        Optional<Curso> cursoExists = this.repository.findById(idCurso.intValue());
+    public Curso editar(Long id_curso, CursoEditarDTO body, String id_instituicao) {
+        Optional<Curso> cursoExists = this.repository.findById(id_curso.intValue());
         if(cursoExists.isEmpty()){
             throw new CursoNotFound();
         }
@@ -59,6 +59,23 @@ public class CursoServiceImpl implements CursoService {
         if(body.tipo() != null){curso.setTipo(body.tipo());}
         if(body.descricao() != null){curso.setDescricao(body.descricao());}
         if(body.qtde_semestres() > 0 ){curso.setQtde_semestres(body.qtde_semestres());}
+        return this.repository.save(curso);
+    }
+
+    @Override
+    public Curso inativar(Long id_curso, String id_instituicao) {
+        Optional<Curso> cursoExists = this.repository.findById(id_curso.intValue());
+        if(cursoExists.isEmpty()){
+            throw new CursoNotFound();
+        }
+
+        Curso curso = cursoExists.get();
+
+        if (!curso.getInstituicao().getIdInstituicao().equals(id_instituicao)) {
+            throw new CursoChangeUnauthorized();
+        }
+
+        curso.setAtivo(false);
         return this.repository.save(curso);
     }
 }

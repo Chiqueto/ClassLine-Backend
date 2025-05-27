@@ -37,4 +37,11 @@ public class CursoController {
         return ResponseEntity.status(HttpStatus.OK).body("Curso editado com sucesso!");
     }
 
+    @PreAuthorize("hasRole('INSTITUICAO')")
+    @DeleteMapping("/{id_instituicao}/{id_curso}")
+    public ResponseEntity cursoInactive( @PathVariable String id_instituicao, @PathVariable Long id_curso){
+        this.service.inativar(id_curso, id_instituicao);
+        return ResponseEntity.status(HttpStatus.OK).body("Curso Inativado com sucesso!");
+    }
+
 }
