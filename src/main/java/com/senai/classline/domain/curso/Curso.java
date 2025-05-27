@@ -22,7 +22,7 @@ public class Curso {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_curso")
     private Long idCurso;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_instituicao", referencedColumnName = "id_instituicao")
     private Instituicao instituicao;
     private String nome;

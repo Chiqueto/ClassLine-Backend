@@ -14,6 +14,8 @@ import com.senai.classline.service.CursoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -77,5 +79,26 @@ public class CursoServiceImpl implements CursoService {
 
         curso.setAtivo(false);
         return this.repository.save(curso);
+    }
+
+    @Override
+    public Curso getCursoById(Long id_curso) {
+        Optional<Curso> cursoExists = this.repository.findById(id_curso.intValue());
+
+        if(cursoExists.isEmpty()){
+            throw new CursoNotFound();
+        }
+
+        return cursoExists.get();
+    }
+
+    @Override
+    public List<Curso> getCursosByInstituicao(String id_instituicao) {
+        List<Curso> cursos = repository.findByInstituicao_IdInstituicao(id_instituicao);
+        if(cursos.isEmpty()){
+            throw new CursoNotFound();
+        }
+
+        return cursos;
     }
 }
