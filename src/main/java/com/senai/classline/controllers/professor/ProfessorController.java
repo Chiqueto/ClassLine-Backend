@@ -36,7 +36,7 @@ public class ProfessorController {
             @PathVariable String id_instituicao,
             @PathVariable String id_professor
     ) {
-        professorService.inativar(id_professor, id_instituicao);
+        professorService.inativar(id_instituicao, id_professor);
         return ResponseEntity.noContent().build(); // HTTP 204
 
     }

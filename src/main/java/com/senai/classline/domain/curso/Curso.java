@@ -1,5 +1,6 @@
 package com.senai.classline.domain.curso;
 
+import com.senai.classline.domain.instituicao.Instituicao;
 import com.senai.classline.enums.Tipo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,8 +19,9 @@ public class Curso {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_curso")
     private Long idCurso;
-    @Column(name = "id_instituicao")
-    private String idInstituicao;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_instituicao", referencedColumnName = "id_instituicao")
+    private Instituicao instituicao;
     private String nome;
     private String descricao;
     private int qtde_semestres;

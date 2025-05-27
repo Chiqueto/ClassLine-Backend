@@ -13,7 +13,6 @@ public interface ProfessorService {
 
     Professor inativar (String id, String id_instituicao);
 
-    void validar (Professor professor);
 
     Professor converteDTO (ProfessorDTO body);
 

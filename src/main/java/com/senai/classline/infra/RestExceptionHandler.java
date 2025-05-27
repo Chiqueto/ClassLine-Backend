@@ -1,5 +1,6 @@
 package com.senai.classline.infra;
 
+import com.senai.classline.exceptions.curso.CursoAlreadyExists;
 import com.senai.classline.exceptions.instituicao.InstituicaoAlreadyExists;
 import com.senai.classline.exceptions.global.LoginFail;
 import com.senai.classline.exceptions.instituicao.InstituicaoNotFound;
@@ -39,7 +40,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ProfessorAlreadyExists.class)
     private ResponseEntity<String> professorAlreadyExistsHandle (ProfessorAlreadyExists exception){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("Professor já cadastrada com esse CPF!");
+        String errorMessage = (exception != null && exception.getMessage() != null)
+                ? exception.getMessage()
+                : "Professor já cadastrada com esse CPF!";
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
+    }
+
+    @ExceptionHandler(CursoAlreadyExists.class)
+    private ResponseEntity<String> cursoAlreadyExists (CursoAlreadyExists exception){
+        String errorMessage = (exception != null && exception.getMessage() != null)
+                ? exception.getMessage()
+                : "Curso com esse nome já cadastrado";
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
     }
 
     @ExceptionHandler(ProfessorNotFound.class)

@@ -20,9 +20,7 @@ import java.util.Optional;
 @RequestMapping("/instituicao")
 @RequiredArgsConstructor
 public class InstituicaoController {
-	private final ProfessorRepository professorRepository;
 	private final InstituicaoService service;
-	private final CursoRepository cursoRepository;
 
 	@PreAuthorize("hasRole('INSTITUICAO')")
 	@GetMapping
@@ -37,27 +35,4 @@ public class InstituicaoController {
 		return ResponseEntity.status(HttpStatus.OK).body("Instituição atualizada com sucesso!");
 	}
 
-	@PreAuthorize("hasRole('INSTITUICAO')")
-	@PostMapping("/{id_instituicao}/curso")
-	public ResponseEntity cursoRegister(@RequestBody @Valid CursoDTO body, @PathVariable String id_instituicao) {
-		Optional<Curso> curso = this.cursoRepository.findByNome(body.nome());
-		if (curso.isPresent()) {
-			return ResponseEntity.status(409).body("Curso já cadastrado.");
-		}
-		try {
-			Curso newCurso = new Curso();
-			newCurso.setDescricao(body.descricao());
-			newCurso.setTipo(body.tipo());
-			newCurso.setNome(body.nome());
-			newCurso.setIdInstituicao(id_instituicao);
-			newCurso.setQtde_semestres(body.qtde_semestres());
-
-			System.out.println(newCurso);
-			this.cursoRepository.save(newCurso);
-
-			return ResponseEntity.noContent().build();
-		}catch (RuntimeException e){
-			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-	}
 }

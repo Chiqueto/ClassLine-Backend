@@ -1,5 +1,6 @@
 package com.senai.classline.service.impl;
 
+import com.senai.classline.domain.instituicao.Instituicao;
 import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.dto.PessoaLoginRequestDTO;
 import com.senai.classline.dto.professor.ProfessorDTO;
@@ -8,10 +9,12 @@ import com.senai.classline.dto.professor.ProfessorEditarDTO;
 import com.senai.classline.enums.StatusPessoa;
 import com.senai.classline.enums.UserType;
 import com.senai.classline.exceptions.global.LoginFail;
+import com.senai.classline.exceptions.instituicao.InstituicaoNotFound;
 import com.senai.classline.exceptions.professor.ProfessorAlreadyExists;
 import com.senai.classline.exceptions.professor.ProfessorChangeUnauthorized;
 import com.senai.classline.exceptions.professor.ProfessorNotFound;
 import com.senai.classline.infra.security.TokenService;
+import com.senai.classline.repositories.InstituicaoRepository;
 import com.senai.classline.repositories.ProfessorRepository;
 import com.senai.classline.service.ProfessorService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ public class ProfessorServiceImpl implements ProfessorService {
     private final PasswordEncoder professorPasswordEncoder;
     private final ProfessorRepository professorRepository;
     private final TokenService professorTokenService;
+    private final InstituicaoRepository instituicaoRepository;
 
     @Override
     public Professor salvar(ProfessorDTO professorDTO, String id_instituicao) {
@@ -36,7 +40,11 @@ public class ProfessorServiceImpl implements ProfessorService {
 
         if(professor.isEmpty()) {
             Professor newProfessor = converteDTO(professorDTO);
-            newProfessor.setIdInstituicao(id_instituicao);
+            Optional<Instituicao> instituicaoExists = instituicaoRepository.findByIdInstituicao(id_instituicao);
+            if(instituicaoExists.isEmpty()){
+                throw new InstituicaoNotFound();
+            }
+            newProfessor.setInstituicao(instituicaoExists.get());
 //            String token = this.professorTokenService.generateToken(newProfessor, UserType.PROFESSOR);
             return this.professorRepository.save(newProfessor);
         }
@@ -81,7 +89,7 @@ public class ProfessorServiceImpl implements ProfessorService {
 
         Professor professor = professorExists.get();
 
-        if (!professor.getIdInstituicao().equals(id_instituicao)) {
+        if (!professor.getInstituicao().getIdInstituicao().equals(id_instituicao)) {
             throw new ProfessorChangeUnauthorized();
         }
 
@@ -93,10 +101,6 @@ public class ProfessorServiceImpl implements ProfessorService {
         return professorRepository.save(professor);
     }
 
-    @Override
-    public void validar(Professor professor) {
-
-    }
 
     @Override
     public Professor converteDTO(ProfessorDTO body) {
@@ -131,7 +135,7 @@ public class ProfessorServiceImpl implements ProfessorService {
         }
 
         String token = professorTokenService.generateToken(professor.get(), UserType.PROFESSOR);
-        return new ResponseDTO(professor.get().getIdInstituicao(), token);
+        return new ResponseDTO(professor.get().getInstituicao().getIdInstituicao(), token);
     }
 }
 

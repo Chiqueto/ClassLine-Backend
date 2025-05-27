@@ -19,14 +19,12 @@ public record ProfessorDTO(
         @Email(message = "Email deve estar no formato correto")
         String email,
         @NotEmpty(message = "Senha não pode estar vazio")
-        @Min(value = 3, message = "Mínimo de 3 caracteres para senha!")
         @NotNull(message = "Senha não pode ser nula")
         String senha,
         @NotEmpty(message = "CPF não pode estar vazio")
         @NotNull(message = "CPF não pode ser nulo")
         @CPF(message = "CPF deve estar no formato correto")
         String cpf,
-        @NotEmpty(message = "Data de nascimento não pode estar vazia")
         @NotNull(message = "Data de nascimento não pode ser nula")
         Date dt_nascimento,
         @NotEmpty(message = "Genero não pode estar vazio")
@@ -39,20 +37,14 @@ public record ProfessorDTO(
         @Pattern(regexp = "^\\(?(\\d{2})\\)?[- ]?(\\d{4,5})[- ]?(\\d{4})$",
                 message = "Telefone deve estar no formato (XX) XXXX-XXXX ou (XX) XXXXX-XXXX")
         String telefone,
-        @NotEmpty(message = "Turno não pode estar vazio")
-        @NotNull(message = "Turno não pode ser nulo")
         Turno turno,
-        @NotEmpty(message = "Status não pode estar vazio")
-        @NotNull(message = "Status não pode ser nulo")
+
         StatusPessoa status,
-        @NotEmpty(message = "Formação não pode estar vazio")
-        @NotNull(message = "Formação não pode ser nulo")
         Formacao formacao,
         @NotEmpty(message = "Area de atuação não pode estar vazio")
         @NotNull(message = "Area de atuação não pode ser nulo")
         String area_atuacao,
         String diploma,
-        @NotEmpty(message = "Data de admissão não pode estar vazio")
         @NotNull(message = "Data de admissão não pode ser nulo")
         Date dt_admissao) {
 }
