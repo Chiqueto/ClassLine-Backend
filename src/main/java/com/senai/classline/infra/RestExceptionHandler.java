@@ -1,6 +1,8 @@
 package com.senai.classline.infra;
 
 import com.senai.classline.exceptions.curso.CursoAlreadyExists;
+import com.senai.classline.exceptions.curso.CursoChangeUnauthorized;
+import com.senai.classline.exceptions.curso.CursoNotFound;
 import com.senai.classline.exceptions.instituicao.InstituicaoAlreadyExists;
 import com.senai.classline.exceptions.global.LoginFail;
 import com.senai.classline.exceptions.instituicao.InstituicaoNotFound;
@@ -54,6 +56,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
     }
 
+    @ExceptionHandler(CursoNotFound.class)
+    private ResponseEntity<String> cursoAlreadyExists (CursoNotFound exception){
+        String errorMessage = (exception != null && exception.getMessage() != null)
+                ? exception.getMessage()
+                : "Curso não encontrado!";
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+    }
+
     @ExceptionHandler(ProfessorNotFound.class)
     private ResponseEntity<String> professorNotFound (ProfessorNotFound exception){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Professor não encontrado!");
@@ -62,6 +72,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ProfessorChangeUnauthorized.class)
     private ResponseEntity<String> professorChangeUnauthorized (ProfessorChangeUnauthorized exception){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Você não tem permissão para alterar esse professor!");
+    }
+
+    @ExceptionHandler(CursoChangeUnauthorized.class)
+    private ResponseEntity<String> cursoChangeUnauthorized (CursoChangeUnauthorized exception){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Você não tem permissão para alterar esse curso!");
     }
 
     @ExceptionHandler(InstituicaoNotFound.class)

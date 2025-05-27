@@ -54,13 +54,17 @@ public class ProfessorServiceImpl implements ProfessorService {
     }
 
     @Override
-    public Professor editar(String id_professor, ProfessorEditarDTO body) {
+    public Professor editar(String id_professor, ProfessorEditarDTO body, String id_instituicao) {
         Optional<Professor> professorExists = this.professorRepository.findById(id_professor);
         if(professorExists.isEmpty()) {
             throw new ProfessorNotFound();
         }
 
         Professor professor = professorExists.get();
+
+        if (!professor.getInstituicao().getIdInstituicao().equals(id_instituicao)) {
+            throw new ProfessorChangeUnauthorized();
+        }
 
         if(body.email() != null && professorRepository.findByEmail(body.email()).isPresent()){
             throw new ProfessorAlreadyExists("Professor já cadastrado com esse e-mail!");

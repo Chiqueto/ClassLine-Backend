@@ -5,12 +5,13 @@ import com.senai.classline.domain.instituicao.Instituicao;
 import com.senai.classline.dto.curso.CursoDTO;
 import com.senai.classline.dto.curso.CursoEditarDTO;
 import com.senai.classline.exceptions.curso.CursoAlreadyExists;
+import com.senai.classline.exceptions.curso.CursoChangeUnauthorized;
+import com.senai.classline.exceptions.curso.CursoNotFound;
 import com.senai.classline.exceptions.instituicao.InstituicaoNotFound;
 import com.senai.classline.repositories.CursoRepository;
 import com.senai.classline.repositories.InstituicaoRepository;
 import com.senai.classline.service.CursoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -39,11 +40,25 @@ public class CursoServiceImpl implements CursoService {
         newCurso.setQtde_semestres(body.qtde_semestres());
 
         return this.repository.save(newCurso);
-
     }
 
     @Override
-    public Curso editar(Long idCurso, CursoEditarDTO body) {
-        return null;
+    public Curso editar(Long idCurso, CursoEditarDTO body, String id_instituicao) {
+        Optional<Curso> cursoExists = this.repository.findById(idCurso.intValue());
+        if(cursoExists.isEmpty()){
+            throw new CursoNotFound();
+        }
+
+        Curso curso = cursoExists.get();
+
+        if (!curso.getInstituicao().getIdInstituicao().equals(id_instituicao)) {
+            throw new CursoChangeUnauthorized();
+        }
+
+        if(body.nome() != null){curso.setNome(body.nome());}
+        if(body.tipo() != null){curso.setTipo(body.tipo());}
+        if(body.descricao() != null){curso.setDescricao(body.descricao());}
+        if(body.qtde_semestres() > 0 ){curso.setQtde_semestres(body.qtde_semestres());}
+        return this.repository.save(curso);
     }
 }

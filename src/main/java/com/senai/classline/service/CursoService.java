@@ -7,6 +7,6 @@ import com.senai.classline.dto.curso.CursoEditarDTO;
 public interface CursoService {
     Curso criar(String id_instituicao, CursoDTO body);
 
-    Curso editar(Long cursoId, CursoEditarDTO body);
+    Curso editar(Long cursoId, CursoEditarDTO body, String id_instituicao);
 
 }

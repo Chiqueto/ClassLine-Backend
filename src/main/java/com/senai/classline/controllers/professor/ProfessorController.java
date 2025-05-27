@@ -42,9 +42,9 @@ public class ProfessorController {
     }
 
     @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
-    @PutMapping("/{id_professor}")
-    public ResponseEntity updateProfessor(@PathVariable String id_professor, @RequestBody @Valid ProfessorEditarDTO professorEditarDTO) {
-        this.professorService.editar(id_professor, professorEditarDTO);
+    @PutMapping("/{id_instituicao}/{id_professor}")
+    public ResponseEntity updateProfessor(@PathVariable String id_professor, @PathVariable String id_instituicao, @RequestBody @Valid ProfessorEditarDTO professorEditarDTO) {
+        this.professorService.editar(id_professor, professorEditarDTO, id_instituicao);
         return ResponseEntity.status(HttpStatus.OK).body("Professor editado com sucesso!");
 
     }

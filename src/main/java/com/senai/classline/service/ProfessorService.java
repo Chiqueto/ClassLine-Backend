@@ -9,7 +9,7 @@ import com.senai.classline.dto.professor.ProfessorEditarDTO;
 public interface ProfessorService {
     Professor salvar (ProfessorDTO professorDTO, String id_instituicao);
 
-    Professor editar (String idInstituicao, ProfessorEditarDTO body);
+    Professor editar (String idInstituicao, ProfessorEditarDTO body, String id_instituicao);
 
     Professor inativar (String id, String id_instituicao);
 
