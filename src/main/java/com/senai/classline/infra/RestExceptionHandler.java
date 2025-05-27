@@ -9,6 +9,7 @@ import com.senai.classline.exceptions.instituicao.InstituicaoNotFound;
 import com.senai.classline.exceptions.professor.ProfessorAlreadyExists;
 import com.senai.classline.exceptions.professor.ProfessorChangeUnauthorized;
 import com.senai.classline.exceptions.professor.ProfessorNotFound;
+import com.senai.classline.exceptions.turma.TurmaNotFound;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -67,6 +68,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ProfessorNotFound.class)
     private ResponseEntity<String> professorNotFound (ProfessorNotFound exception){
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Professor não encontrado!");
+    }
+
+    @ExceptionHandler(TurmaNotFound.class)
+    private ResponseEntity<String> turmaNotFound (TurmaNotFound exception){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 
     @ExceptionHandler(ProfessorChangeUnauthorized.class)

@@ -20,17 +20,16 @@ public class Turma {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_turma")
-    public String idTurma;
-    public String nome;
-    public String observacao;
-    public Turno turno;
-    public Date dt_inicio;
-    public Date dt_fim;
-    public Boolean ativo;
+    private Long idTurma;
+    private String nome;
+    private String observacao;
+    @Enumerated(value= EnumType.STRING)
+    private Turno turno;
+    private Date dt_inicio;
+    private Date dt_fim;
+    private Boolean ativo;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_curso", referencedColumnName = "id_curso")
-    public Curso curso;
-    public Long id_grade;
-
-
+    private Curso curso;
+    private Long id_grade;
 }

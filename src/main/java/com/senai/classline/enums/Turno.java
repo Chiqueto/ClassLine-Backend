@@ -1,7 +1,7 @@
 package com.senai.classline.enums;
 
 public enum Turno {
-    MANHA ,
+    MANHA,
     TARDE,
     NOITE,
     INTEGRAL
