@@ -3,6 +3,7 @@ package com.senai.classline.controllers.instituicao;
 import com.senai.classline.enums.UserType;
 import com.senai.classline.infra.security.TokenService;
 import com.senai.classline.service.impl.InstituicaoServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import com.senai.classline.dto.ResponseDTO;
 import com.senai.classline.repositories.InstituicaoRepository;
 
 import lombok.RequiredArgsConstructor;
+
 
 @RestController
 @RequestMapping("instituicao/auth")
@@ -34,7 +36,7 @@ public class InstituicaoAuthController {
 	}
 
 	@PostMapping("/register")
-	public ResponseEntity register(@RequestBody InstituicaoDTO body) {
+	public ResponseEntity register(@RequestBody @Valid InstituicaoDTO body) {
 
 		final Instituicao instituicao = instituicaoService.salvar(body);
 

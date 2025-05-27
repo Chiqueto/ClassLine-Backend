@@ -7,6 +7,7 @@ import com.senai.classline.repositories.CursoRepository;
 import com.senai.classline.repositories.ProfessorRepository;
 import com.senai.classline.service.InstituicaoService;
 import com.senai.classline.service.ProfessorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,14 +32,14 @@ public class InstituicaoController {
 
 	@PreAuthorize("hasRole('INSTITUICAO')")
 	@PutMapping("/{idInstituicao}")
-	public ResponseEntity editarInstituicao(@PathVariable String idInstituicao, @RequestBody InstituicaoEditarDTO body){
+	public ResponseEntity editarInstituicao(@PathVariable String idInstituicao, @RequestBody @Valid InstituicaoEditarDTO body){
 		this.service.editar(idInstituicao, body);
 		return ResponseEntity.status(HttpStatus.OK).body("Instituição atualizada com sucesso!");
 	}
 
 	@PreAuthorize("hasRole('INSTITUICAO')")
 	@PostMapping("/{id_instituicao}/curso")
-	public ResponseEntity cursoRegister(@RequestBody CursoDTO body, @PathVariable String id_instituicao) {
+	public ResponseEntity cursoRegister(@RequestBody @Valid CursoDTO body, @PathVariable String id_instituicao) {
 		Optional<Curso> curso = this.cursoRepository.findByNome(body.nome());
 		if (curso.isPresent()) {
 			return ResponseEntity.status(409).body("Curso já cadastrado.");

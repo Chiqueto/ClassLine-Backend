@@ -1,8 +1,10 @@
 package com.senai.classline.controllers.professor;
 
 import com.senai.classline.dto.professor.ProfessorDTO;
+import com.senai.classline.dto.professor.ProfessorEditarDTO;
 import com.senai.classline.repositories.ProfessorRepository;
 import com.senai.classline.service.impl.ProfessorServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +25,7 @@ public class ProfessorController {
 
     @PreAuthorize("hasRole('INSTITUICAO')")
     @PostMapping("/{id_instituicao}/")
-    public ResponseEntity professorRegister(@PathVariable String id_instituicao, @RequestBody ProfessorDTO body) {
+    public ResponseEntity professorRegister(@PathVariable String id_instituicao, @RequestBody @Valid ProfessorDTO body) {
         professorService.salvar(body, id_instituicao);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -39,28 +41,12 @@ public class ProfessorController {
 
     }
 
-    @PreAuthorize("hasRole('INSTITUICAO')")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
     @PutMapping("/{id_professor}")
-    public ResponseEntity updateProfessor( @PathVariable String id_professor) {
-        //Optional<Professor> professor = this.professorRepository.findById(id_professor);
+    public ResponseEntity updateProfessor(@PathVariable String id_professor, @RequestBody @Valid ProfessorEditarDTO professorEditarDTO) {
+        this.professorService.editar(id_professor, professorEditarDTO);
+        return ResponseEntity.status(HttpStatus.OK).body("Professor editado com sucesso!");
 
-//		if(professor.isEmpty()){
-//			return ResponseEntity.notFound().build();
-//		}
-//
-//		try{
-//			Professor entity = professor.get();
-//			entity.setStatus(StatusPessoa.INATIVO);
-//			entity.setDt_desligamento(
-//					Date.from(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant())
-//			);
-//			professorRepository.save(entity);
-//
-//			return ResponseEntity.noContent().build();
-//		} catch (RuntimeException e){
-//			return ResponseEntity.badRequest().body(e.getMessage());
-//		}
-        return null;
     }
 
 }
