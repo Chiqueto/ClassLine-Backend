@@ -1,6 +1,7 @@
 package com.senai.classline.domain.pessoa;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.senai.classline.domain.commom.AuthenticatedUser;
 import com.senai.classline.domain.instituicao.Instituicao;
 import com.senai.classline.enums.StatusPessoa;
@@ -17,9 +18,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public abstract class Pessoa implements AuthenticatedUser {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_instituicao", referencedColumnName = "id_instituicao")
-    private Instituicao instituicao;
     private String nome;
     private String email;
     private String senha;

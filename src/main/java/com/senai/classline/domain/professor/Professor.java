@@ -21,15 +21,16 @@ public class Professor extends Pessoa {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id_professor")
     private String idProfessor;
+    @JoinColumn(name = "id_instituicao", referencedColumnName = "id_instituicao")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonBackReference
+    private Instituicao instituicao;
     private Formacao formacao;
     private String area_atuacao;
     private String diploma;
     private Date dt_admissao;
     private Date dt_desligamento;
-    @JoinColumn(name = "id_instituicao", referencedColumnName = "id_instituicao")
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JsonBackReference
-    private Instituicao instituicao;
+
 
     @Override
     public String getLoginIdentifier() {

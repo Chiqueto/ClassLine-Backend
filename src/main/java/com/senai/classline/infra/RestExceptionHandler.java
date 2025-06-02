@@ -3,6 +3,8 @@ package com.senai.classline.infra;
 import com.senai.classline.exceptions.curso.CursoAlreadyExists;
 import com.senai.classline.exceptions.curso.CursoChangeUnauthorized;
 import com.senai.classline.exceptions.curso.CursoNotFound;
+import com.senai.classline.exceptions.global.AlreadyExists;
+import com.senai.classline.exceptions.global.NotFoundException;
 import com.senai.classline.exceptions.instituicao.InstituicaoAlreadyExists;
 import com.senai.classline.exceptions.global.LoginFail;
 import com.senai.classline.exceptions.instituicao.InstituicaoNotFound;
@@ -49,6 +51,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMessage);
     }
 
+    @ExceptionHandler(AlreadyExists.class)
+    private ResponseEntity<String> alreadyExists (AlreadyExists exception){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+    }
+
     @ExceptionHandler(CursoAlreadyExists.class)
     private ResponseEntity<String> cursoAlreadyExists (CursoAlreadyExists exception){
         String errorMessage = (exception != null && exception.getMessage() != null)
@@ -63,6 +70,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 ? exception.getMessage()
                 : "Curso não encontrado!";
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    private ResponseEntity<String> notFoundException (NotFoundException exception){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 
     @ExceptionHandler(ProfessorNotFound.class)
