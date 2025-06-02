@@ -16,7 +16,7 @@ public interface AlunoService {
 
     Aluno editar (AlunoEditarDTO body, String id_aluno);
 
-    Aluno inativar (String id, String id_aluno);
+    Aluno inativar (String id_aluno);
 
     ResponseDTO login (PessoaLoginRequestDTO body);
 

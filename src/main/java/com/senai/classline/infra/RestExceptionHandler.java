@@ -5,6 +5,7 @@ import com.senai.classline.exceptions.curso.CursoChangeUnauthorized;
 import com.senai.classline.exceptions.curso.CursoNotFound;
 import com.senai.classline.exceptions.global.AlreadyExists;
 import com.senai.classline.exceptions.global.NotFoundException;
+import com.senai.classline.exceptions.global.UnauthorizedException;
 import com.senai.classline.exceptions.instituicao.InstituicaoAlreadyExists;
 import com.senai.classline.exceptions.global.LoginFail;
 import com.senai.classline.exceptions.instituicao.InstituicaoNotFound;
@@ -54,6 +55,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(AlreadyExists.class)
     private ResponseEntity<String> alreadyExists (AlreadyExists exception){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    private ResponseEntity<String> unauthorizedException (UnauthorizedException exception){
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
     }
 
     @ExceptionHandler(CursoAlreadyExists.class)
