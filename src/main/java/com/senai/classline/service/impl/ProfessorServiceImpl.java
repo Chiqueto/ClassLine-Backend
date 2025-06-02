@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -140,6 +141,29 @@ public class ProfessorServiceImpl implements ProfessorService {
 
         String token = professorTokenService.generateToken(professor.get(), UserType.PROFESSOR);
         return new ResponseDTO(professor.get().getInstituicao().getIdInstituicao(), token);
+    }
+
+    @Override
+    public Professor getById(String idProfessor) {
+         Optional<Professor> professor = professorRepository.findById(idProfessor);
+
+         if (professor.isEmpty()) {
+             throw new ProfessorNotFound();
+         }
+
+         return professor.get();
+
+    }
+
+    @Override
+    public List<Professor> getByInstituicao(String idInstituicao) {
+        Optional<Instituicao> instituicao = instituicaoRepository.findById(idInstituicao);
+
+        if(instituicao.isEmpty()){
+            throw new InstituicaoNotFound();
+        }
+
+        return professorRepository.findByInstituicao_idInstituicao(idInstituicao);
     }
 }
 

@@ -31,6 +31,6 @@ public class Curso {
     @Enumerated(value= EnumType.STRING)
     private Tipo tipo;
     private Boolean ativo;
-    @OneToMany(mappedBy = "curso", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "curso")
     private List<Turma> turmas;
 }

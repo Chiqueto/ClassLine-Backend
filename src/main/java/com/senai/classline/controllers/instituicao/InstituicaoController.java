@@ -1,6 +1,7 @@
 package com.senai.classline.controllers.instituicao;
 
 import com.senai.classline.domain.curso.Curso;
+import com.senai.classline.domain.instituicao.Instituicao;
 import com.senai.classline.dto.curso.CursoDTO;
 import com.senai.classline.dto.instituicao.InstituicaoEditarDTO;
 import com.senai.classline.repositories.CursoRepository;
@@ -23,9 +24,10 @@ public class InstituicaoController {
 	private final InstituicaoService service;
 
 	@PreAuthorize("hasRole('INSTITUICAO')")
-	@GetMapping
-	public ResponseEntity<String> getUser(){
-		return ResponseEntity.ok("sucesso!");
+	@GetMapping("/{id_instituicao}")
+	public ResponseEntity<Instituicao> getInstituicaoById(@PathVariable String id_instituicao){
+			final Instituicao instituicao = this.service.getById(id_instituicao);
+			return ResponseEntity.status(HttpStatus.OK).body(instituicao);
 	}
 
 	@PreAuthorize("hasRole('INSTITUICAO')")

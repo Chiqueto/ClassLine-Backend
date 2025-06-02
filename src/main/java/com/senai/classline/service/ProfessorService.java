@@ -6,6 +6,8 @@ import com.senai.classline.dto.professor.ProfessorDTO;
 import com.senai.classline.dto.ResponseDTO;
 import com.senai.classline.dto.professor.ProfessorEditarDTO;
 
+import java.util.List;
+
 public interface ProfessorService {
     Professor salvar (ProfessorDTO professorDTO, String id_instituicao);
 
@@ -17,4 +19,8 @@ public interface ProfessorService {
     Professor converteDTO (ProfessorDTO body);
 
     ResponseDTO login (PessoaLoginRequestDTO body);
+
+    Professor getById(String idProfessor);
+
+    List<Professor> getByInstituicao(String idInstituicao);
 }

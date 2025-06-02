@@ -46,7 +46,7 @@ public class CursoServiceImpl implements CursoService {
 
     @Override
     public Curso editar(Long id_curso, CursoEditarDTO body, String id_instituicao) {
-        Optional<Curso> cursoExists = this.repository.findById(id_curso.intValue());
+        Optional<Curso> cursoExists = this.repository.findById(id_curso);
         if(cursoExists.isEmpty()){
             throw new CursoNotFound();
         }
@@ -66,7 +66,7 @@ public class CursoServiceImpl implements CursoService {
 
     @Override
     public Curso inativar(Long id_curso, String id_instituicao) {
-        Optional<Curso> cursoExists = this.repository.findById(id_curso.intValue());
+        Optional<Curso> cursoExists = this.repository.findById(id_curso);
         if(cursoExists.isEmpty()){
             throw new CursoNotFound();
         }
@@ -83,7 +83,7 @@ public class CursoServiceImpl implements CursoService {
 
     @Override
     public Curso getCursoById(Long id_curso) {
-        Optional<Curso> cursoExists = this.repository.findById(id_curso.intValue());
+        Optional<Curso> cursoExists = this.repository.findById(id_curso);
 
         if(cursoExists.isEmpty()){
             throw new CursoNotFound();

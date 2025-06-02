@@ -12,6 +12,7 @@ import com.senai.classline.service.TurmaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,7 +23,7 @@ public class TurmaServiceImpl implements TurmaService {
 
     @Override
     public Turma criar(Long id_curso, TurmaDTO body) {
-        Optional<Curso> cursoExists = cursoRepository.findById(id_curso.intValue());
+        Optional<Curso> cursoExists = cursoRepository.findById(id_curso);
 
         if(cursoExists.isEmpty()){
             throw new CursoNotFound();
@@ -44,7 +45,7 @@ public class TurmaServiceImpl implements TurmaService {
 
     @Override
     public Turma editar(Long id_turma, TurmaEditarDTO body) {
-        Optional<Turma> turmaExists = repository.findById(id_turma.intValue());
+        Optional<Turma> turmaExists = repository.findById(id_turma);
         if(turmaExists.isEmpty()){
             throw new TurmaNotFound("Turma não encontrada!");
         }
@@ -61,7 +62,40 @@ public class TurmaServiceImpl implements TurmaService {
     }
 
     @Override
-    public Turma inativa(Long id_turma) {
-        return null;
+    public Turma inativar(Long id_turma) {
+        Optional<Turma> turmaExists = repository.findById(id_turma);
+
+        if(turmaExists.isEmpty()){
+            throw new TurmaNotFound("Turma não encontrada!");
+        }
+
+        Turma turma = turmaExists.get();
+
+        turma.setAtivo(false);
+        repository.save(turma);
+        return turma;
+
+    }
+
+    @Override
+    public Turma getTurmaById(Long id_turma) {
+        Optional<Turma> turma = repository.findById(id_turma);
+
+        if(turma.isEmpty()){
+            throw new TurmaNotFound("Turma não encontrada");
+        }
+
+        return turma.get();
+    }
+
+    @Override
+    public List<Turma> GetTurmaByCurso(Long id_curso) {
+        Optional<Curso> cursoExists = cursoRepository.findById(id_curso);
+
+        if(cursoExists.isEmpty()){
+            throw new CursoNotFound();
+        }
+
+        return repository.findByCurso_idCurso(id_curso);
     }
 }

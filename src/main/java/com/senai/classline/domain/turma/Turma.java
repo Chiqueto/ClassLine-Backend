@@ -1,5 +1,6 @@
 package com.senai.classline.domain.turma;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.senai.classline.domain.curso.Curso;
 import com.senai.classline.enums.Turno;
 import jakarta.persistence.*;
@@ -30,6 +31,7 @@ public class Turma {
     private Boolean ativo;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_curso", referencedColumnName = "id_curso")
+    @JsonBackReference
     private Curso curso;
     private Long id_grade;
 }

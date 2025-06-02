@@ -12,4 +12,6 @@ public interface InstituicaoService {
     Instituicao editar(String idInstituicao, InstituicaoEditarDTO body);
 
     ResponseDTO login(InstituicaoLoginRequestDTO loginRequest);
+
+    Instituicao getById(String idInstituicao);
 }

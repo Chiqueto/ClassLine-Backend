@@ -1,5 +1,7 @@
 package com.senai.classline.domain.professor;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.senai.classline.domain.instituicao.Instituicao;
 import com.senai.classline.domain.pessoa.Pessoa;
 import com.senai.classline.enums.Formacao;
 import jakarta.persistence.*;
@@ -24,6 +26,10 @@ public class Professor extends Pessoa {
     private String diploma;
     private Date dt_admissao;
     private Date dt_desligamento;
+    @JoinColumn(name = "id_instituicao", referencedColumnName = "id_instituicao")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonBackReference
+    private Instituicao instituicao;
 
     @Override
     public String getLoginIdentifier() {

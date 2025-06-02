@@ -1,5 +1,6 @@
 package com.senai.classline.controllers.professor;
 
+import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.dto.professor.ProfessorDTO;
 import com.senai.classline.dto.professor.ProfessorEditarDTO;
 import com.senai.classline.repositories.ProfessorRepository;
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/professor")
 @RequiredArgsConstructor
@@ -18,13 +21,20 @@ public class ProfessorController {
     private final ProfessorRepository professorRepository;
     private final ProfessorServiceImpl professorService;
 
-    @GetMapping
-    public ResponseEntity<String> getUser(){
-        return ResponseEntity.ok("sucesso!");
+    @GetMapping("/{id_professor}")
+    public ResponseEntity<Professor> getProfessorById(@PathVariable String id_professor){
+        Professor professor = professorService.getById(id_professor) ;
+        return ResponseEntity.status(HttpStatus.OK).body(professor);
+    }
+
+    @GetMapping("/instituicao/{id_instituicao}")
+    public ResponseEntity<List<Professor>> getProfessorByInstituicao(@PathVariable String id_instituicao){
+        List<Professor> professores = professorService.getByInstituicao(id_instituicao) ;
+        return ResponseEntity.status(HttpStatus.OK).body(professores);
     }
 
     @PreAuthorize("hasRole('INSTITUICAO')")
-    @PostMapping("/{id_instituicao}/")
+    @PostMapping("/{id_instituicao}")
     public ResponseEntity professorRegister(@PathVariable String id_instituicao, @RequestBody @Valid ProfessorDTO body) {
         professorService.salvar(body, id_instituicao);
         return ResponseEntity.status(HttpStatus.CREATED).build();

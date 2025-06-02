@@ -87,5 +87,18 @@ public class InstituicaoServiceImpl implements InstituicaoService {
         String token = tokenService.generateToken(instituicao.get(), UserType.INSTITUICAO);
         return new ResponseDTO(instituicao.get().getIdInstituicao(), token);
     }
+
+    @Override
+    public Instituicao getById(String idInstituicao) {
+        Optional<Instituicao> instituicao = repository.findById(idInstituicao);
+
+        if (instituicao.isEmpty()){
+            throw new InstituicaoNotFound();
+        }
+
+        return instituicao.get();
+
+
+    }
 }
 
