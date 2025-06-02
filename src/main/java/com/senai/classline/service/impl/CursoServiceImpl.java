@@ -40,6 +40,7 @@ public class CursoServiceImpl implements CursoService {
         newCurso.setNome(body.nome());
         newCurso.setInstituicao(instituicaoExists.get());
         newCurso.setQtde_semestres(body.qtde_semestres());
+        newCurso.setAtivo(true);
 
         return this.repository.save(newCurso);
     }
