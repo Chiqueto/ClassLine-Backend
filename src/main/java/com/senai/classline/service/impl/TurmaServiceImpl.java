@@ -2,8 +2,10 @@ package com.senai.classline.service.impl;
 
 import com.senai.classline.domain.curso.Curso;
 import com.senai.classline.domain.turma.Turma;
+import com.senai.classline.dto.curso.CursoResponseDTO;
 import com.senai.classline.dto.turma.TurmaDTO;
 import com.senai.classline.dto.turma.TurmaEditarDTO;
+import com.senai.classline.dto.turma.TurmaResponseDTO;
 import com.senai.classline.exceptions.curso.CursoNotFound;
 import com.senai.classline.exceptions.turma.TurmaNotFound;
 import com.senai.classline.repositories.CursoRepository;
@@ -78,14 +80,36 @@ public class TurmaServiceImpl implements TurmaService {
     }
 
     @Override
-    public Turma getTurmaById(Long id_turma) {
+    public TurmaResponseDTO getTurmaById(Long id_turma) {
         Optional<Turma> turma = repository.findById(id_turma);
 
         if(turma.isEmpty()){
             throw new TurmaNotFound("Turma não encontrada");
         }
-
-        return turma.get();
+        Turma turmaEntity = turma.get();
+        Curso cursoEntity = turmaEntity.getCurso();
+        CursoResponseDTO curso = new CursoResponseDTO(
+               cursoEntity.getIdCurso(),
+                cursoEntity.getInstituicao(),
+                cursoEntity.getNome(),
+                cursoEntity.getDescricao(),
+                cursoEntity.getQtde_semestres(),
+                cursoEntity.getTipo(),
+                cursoEntity.getAtivo()
+        );
+        TurmaResponseDTO turmaDTO = new TurmaResponseDTO(
+                turmaEntity.getIdTurma(),
+                turmaEntity.getNome(),
+                turmaEntity.getObservacao(),
+                turmaEntity.getTurno(),
+                turmaEntity.getDt_inicio(),
+                turmaEntity.getDt_fim(),
+                turmaEntity.getAtivo(),
+                curso,
+                turmaEntity.getId_grade()
+        );
+        System.out.println(turmaDTO.curso());
+        return turmaDTO;
     }
 
     @Override

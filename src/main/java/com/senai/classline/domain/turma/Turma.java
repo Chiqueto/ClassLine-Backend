@@ -31,7 +31,6 @@ public class Turma {
     private Boolean ativo;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_curso", referencedColumnName = "id_curso")
-    @JsonBackReference
     private Curso curso;
     private Long id_grade;
 }

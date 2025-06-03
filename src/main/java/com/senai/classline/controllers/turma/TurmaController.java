@@ -3,6 +3,7 @@ package com.senai.classline.controllers.turma;
 import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.dto.turma.TurmaDTO;
 import com.senai.classline.dto.turma.TurmaEditarDTO;
+import com.senai.classline.dto.turma.TurmaResponseDTO;
 import com.senai.classline.service.impl.TurmaServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +44,7 @@ public class TurmaController {
     @PreAuthorize("hasRole('INSTITUICAO')")
     @GetMapping("/{id_turma}")
     public ResponseEntity getTurmaById(@PathVariable Long id_turma){
-        Turma turma = this.service.getTurmaById(id_turma);
+        TurmaResponseDTO turma = this.service.getTurmaById(id_turma);
         return ResponseEntity.status(HttpStatus.OK).body(turma);
     }
 

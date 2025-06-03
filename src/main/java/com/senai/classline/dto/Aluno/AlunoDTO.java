@@ -46,7 +46,7 @@ public record AlunoDTO(
         String telefone,
         @NotNull(message = "Turno não pode ser nulo")
         Turno turno,
-        StatusPessoa status,
+       StatusPessoa status,
         @NotNull(message = "Turma não pode ser nula")
         Long id_turma,
         @NotNull(message = "Curso não pode ser nulo")

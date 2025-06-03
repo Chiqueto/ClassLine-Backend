@@ -3,6 +3,7 @@ package com.senai.classline.service;
 import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.dto.turma.TurmaDTO;
 import com.senai.classline.dto.turma.TurmaEditarDTO;
+import com.senai.classline.dto.turma.TurmaResponseDTO;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface TurmaService {
 
     Turma inativar(Long id_turma);
 
-    Turma getTurmaById(Long id_turma);
+    TurmaResponseDTO getTurmaById(Long id_turma);
 
     List<Turma> GetTurmaByCurso(Long id_curso);
 }
