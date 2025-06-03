@@ -14,6 +14,7 @@ import com.senai.classline.service.TurmaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,10 +118,45 @@ public class TurmaServiceImpl implements TurmaService {
         Optional<Curso> cursoExists = cursoRepository.findById(id_curso);
 
         if(cursoExists.isEmpty()){
-            throw new CursoNotFound();
+            throw new CursoNotFound("Curso não encontrado"); // É uma boa prática adicionar uma mensagem na exceção
         }
 
-        List<Turma> turmaEntity = repository.findByCurso_idCurso(id_curso);
-        return null;
+        List<Turma> turmasEntity = repository.findByCurso_idCurso(id_curso);
+        List<TurmaResponseDTO> turmasDTO = new ArrayList<>(); // Crie uma lista para armazenar os DTOs
+
+        if(turmasEntity.isEmpty()){
+
+            return turmasDTO;
+        }
+
+        for (Turma turmaEntity : turmasEntity) {
+            Curso cursoEntity = turmaEntity.getCurso();
+
+
+            CursoResponseDTO cursoDTO = new CursoResponseDTO(
+                    cursoEntity.getIdCurso(),
+                    cursoEntity.getInstituicao(),
+                    cursoEntity.getNome(),
+                    cursoEntity.getDescricao(),
+                    cursoEntity.getQtde_semestres(),
+                    cursoEntity.getTipo(),
+                    cursoEntity.getAtivo()
+            );
+
+            TurmaResponseDTO turmaDTO = new TurmaResponseDTO(
+                    turmaEntity.getIdTurma(),
+                    turmaEntity.getNome(),
+                    turmaEntity.getObservacao(),
+                    turmaEntity.getTurno(),
+                    turmaEntity.getDt_inicio(),
+                    turmaEntity.getDt_fim(),
+                    turmaEntity.getAtivo(),
+                    cursoDTO,
+                    turmaEntity.getId_grade()
+            );
+            turmasDTO.add(turmaDTO);
+        }
+
+        return turmasDTO;
     }
 }
