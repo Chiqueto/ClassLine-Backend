@@ -159,4 +159,51 @@ public class TurmaServiceImpl implements TurmaService {
 
         return turmasDTO;
     }
+
+    public List<TurmaResponseDTO> getTurmasByInstituicao(String idInstituicao) {
+
+        List<Curso> cursosDaInstituicao = cursoRepository.findByInstituicao_IdInstituicao(idInstituicao);
+
+        List<TurmaResponseDTO> todasAsTurmasDTO = new ArrayList<>();
+
+        if (cursosDaInstituicao.isEmpty()) {
+            return todasAsTurmasDTO;
+        }
+
+
+        for (Curso cursoEntity : cursosDaInstituicao) {
+
+            CursoResponseDTO cursoDTO = new CursoResponseDTO(
+                    cursoEntity.getIdCurso(),
+                    cursoEntity.getInstituicao(),
+                    cursoEntity.getNome(),
+                    cursoEntity.getDescricao(),
+                    cursoEntity.getQtde_semestres(),
+                    cursoEntity.getTipo(),
+                    cursoEntity.getAtivo()
+            );
+
+
+            List<Turma> turmasDoCurso = repository.findByCurso_idCurso(cursoEntity.getIdCurso());
+
+            if (!turmasDoCurso.isEmpty()) {
+                for (Turma turmaEntity : turmasDoCurso) {
+
+                    TurmaResponseDTO turmaDTO = new TurmaResponseDTO(
+                            turmaEntity.getIdTurma(),
+                            turmaEntity.getNome(),
+                            turmaEntity.getObservacao(),
+                            turmaEntity.getTurno(),
+                            turmaEntity.getDt_inicio(),
+                            turmaEntity.getDt_fim(),
+                            turmaEntity.getAtivo(),
+                            cursoDTO,
+                            turmaEntity.getId_grade()
+                    );
+                    todasAsTurmasDTO.add(turmaDTO);
+                }
+            }
+        }
+        return todasAsTurmasDTO;
+    }
 }

@@ -1,5 +1,6 @@
 package com.senai.classline.domain.instituicao;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.senai.classline.domain.commom.AuthenticatedUser;
 import com.senai.classline.domain.professor.Professor;
@@ -33,7 +34,7 @@ public class Instituicao implements AuthenticatedUser {
 	private String cidade;
 	private String telefone;
 	@OneToMany(mappedBy = "instituicao", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JsonManagedReference
+	@JsonBackReference
 	private List<Professor> professores;
 
 	@Override

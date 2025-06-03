@@ -17,4 +17,6 @@ public interface TurmaService {
     TurmaResponseDTO getTurmaById(Long id_turma);
 
     List<TurmaResponseDTO> GetTurmaByCurso(Long id_curso);
+
+    List<TurmaResponseDTO> getTurmasByInstituicao(String idInstituicao);
 }
