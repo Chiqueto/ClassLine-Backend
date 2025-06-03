@@ -1,6 +1,7 @@
 package com.senai.classline.service.impl;
 
 import com.senai.classline.domain.curso.Curso;
+import com.senai.classline.domain.grade.Grade;
 import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.dto.curso.CursoResponseDTO;
 import com.senai.classline.dto.turma.TurmaDTO;
@@ -9,6 +10,7 @@ import com.senai.classline.dto.turma.TurmaResponseDTO;
 import com.senai.classline.exceptions.curso.CursoNotFound;
 import com.senai.classline.exceptions.turma.TurmaNotFound;
 import com.senai.classline.repositories.CursoRepository;
+import com.senai.classline.repositories.GradeRepository;
 import com.senai.classline.repositories.TurmaRepository;
 import com.senai.classline.service.TurmaService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import java.util.Optional;
 public class TurmaServiceImpl implements TurmaService {
     private final TurmaRepository repository;
     private final CursoRepository cursoRepository;
+    private final GradeRepository gradeRepository;
 
     @Override
     public Turma criar(Long id_curso, TurmaDTO body) {
@@ -43,7 +46,12 @@ public class TurmaServiceImpl implements TurmaService {
         turma.setTurno(body.turno());
         turma.setAtivo(true);
 
-        return repository.save(turma);
+        Turma newTurma = repository.save(turma);
+        Grade grade = new Grade();
+        grade.setDescricao("Grade curricular referente à turma " + turma.getNome());
+        grade.setTurma(newTurma);
+        turma.setGrade(gradeRepository.save(grade));
+        return newTurma;
     }
 
     @Override
@@ -107,7 +115,7 @@ public class TurmaServiceImpl implements TurmaService {
                 turmaEntity.getDt_fim(),
                 turmaEntity.getAtivo(),
                 curso,
-                turmaEntity.getId_grade()
+                turmaEntity.getGrade()
         );
         System.out.println(turmaDTO.curso());
         return turmaDTO;
@@ -152,7 +160,7 @@ public class TurmaServiceImpl implements TurmaService {
                     turmaEntity.getDt_fim(),
                     turmaEntity.getAtivo(),
                     cursoDTO,
-                    turmaEntity.getId_grade()
+                    turmaEntity.getGrade()
             );
             turmasDTO.add(turmaDTO);
         }
@@ -198,7 +206,7 @@ public class TurmaServiceImpl implements TurmaService {
                             turmaEntity.getDt_fim(),
                             turmaEntity.getAtivo(),
                             cursoDTO,
-                            turmaEntity.getId_grade()
+                            turmaEntity.getGrade()
                     );
                     todasAsTurmasDTO.add(turmaDTO);
                 }

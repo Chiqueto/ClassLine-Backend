@@ -1,6 +1,7 @@
 package com.senai.classline.dto.turma;
 
 import com.senai.classline.domain.curso.Curso;
+import com.senai.classline.domain.grade.Grade;
 import com.senai.classline.dto.curso.CursoResponseDTO;
 import com.senai.classline.enums.Turno;
 import jakarta.persistence.*;
@@ -16,7 +17,7 @@ public record TurmaResponseDTO (
      Date dt_fim,
      Boolean ativo,
      CursoResponseDTO curso,
-     Long id_grade
+     Grade grade
 )
 {
 }

@@ -2,6 +2,7 @@ package com.senai.classline.domain.turma;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.senai.classline.domain.curso.Curso;
+import com.senai.classline.domain.grade.Grade;
 import com.senai.classline.enums.Turno;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,5 +33,7 @@ public class Turma {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_curso", referencedColumnName = "id_curso")
     private Curso curso;
-    private Long id_grade;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_grade", referencedColumnName = "id_grade")
+    private Grade grade;
 }
