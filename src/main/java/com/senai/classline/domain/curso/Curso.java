@@ -1,5 +1,6 @@
 package com.senai.classline.domain.curso;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.senai.classline.domain.instituicao.Instituicao;
 import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.enums.Tipo;
@@ -32,5 +33,6 @@ public class Curso {
     private Tipo tipo;
     private Boolean ativo;
     @OneToMany(mappedBy = "curso")
+    @JsonBackReference
     private List<Turma> turmas;
 }

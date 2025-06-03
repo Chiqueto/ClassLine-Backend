@@ -51,7 +51,7 @@ public class TurmaController {
     @PreAuthorize("hasRole('INSTITUICAO')")
     @GetMapping("/curso/{id_curso}")
     public ResponseEntity getTurmaByCurso(@PathVariable Long id_curso){
-        List<Turma> turmas = this.service.GetTurmaByCurso(id_curso);
+        List<TurmaResponseDTO> turmas = this.service.GetTurmaByCurso(id_curso);
         return ResponseEntity.status(HttpStatus.OK).body(turmas);
     }
 }

@@ -113,13 +113,14 @@ public class TurmaServiceImpl implements TurmaService {
     }
 
     @Override
-    public List<Turma> GetTurmaByCurso(Long id_curso) {
+    public List<TurmaResponseDTO> GetTurmaByCurso(Long id_curso) {
         Optional<Curso> cursoExists = cursoRepository.findById(id_curso);
 
         if(cursoExists.isEmpty()){
             throw new CursoNotFound();
         }
 
-        return repository.findByCurso_idCurso(id_curso);
+        List<Turma> turmaEntity = repository.findByCurso_idCurso(id_curso);
+        return null;
     }
 }
