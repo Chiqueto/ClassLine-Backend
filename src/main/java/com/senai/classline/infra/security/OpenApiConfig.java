@@ -16,7 +16,7 @@ public class OpenApiConfig {
         final String securitySchemeName = "bearerAuth";
 
         return new OpenAPI()
-                .info(new Info().title("UFEM API").version("1.0").description("Documentação da API UFEM"))
+                .info(new Info().title("ClassLine API").version("1.0").description("Documentação da API Classline"))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName,

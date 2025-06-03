@@ -1,9 +1,11 @@
 package com.senai.classline.controllers.turma;
 
 import com.senai.classline.domain.turma.Turma;
+import com.senai.classline.dto.semestre.SemestreResponseDTO;
 import com.senai.classline.dto.turma.TurmaDTO;
 import com.senai.classline.dto.turma.TurmaEditarDTO;
 import com.senai.classline.dto.turma.TurmaResponseDTO;
+import com.senai.classline.service.SemestreService;
 import com.senai.classline.service.impl.TurmaServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -61,4 +63,6 @@ public class TurmaController {
         List<TurmaResponseDTO> turmas = this.service.getTurmasByInstituicao(id_instituicao);
         return ResponseEntity.status(HttpStatus.OK).body(turmas);
     }
+
+
 }

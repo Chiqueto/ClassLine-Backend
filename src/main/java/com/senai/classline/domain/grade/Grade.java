@@ -1,7 +1,9 @@
 package com.senai.classline.domain.grade;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.senai.classline.domain.instituicao.Instituicao;
+import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.enums.Tipo;
 import jakarta.persistence.*;
@@ -27,4 +29,6 @@ public class Grade {
     @JoinColumn(name = "id_turma", referencedColumnName = "id_turma")
     private Turma turma;
     private String descricao;
+    @OneToMany(mappedBy = "grade", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Semestre> semestre;
 }

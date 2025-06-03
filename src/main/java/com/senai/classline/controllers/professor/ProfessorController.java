@@ -18,7 +18,6 @@ import java.util.List;
 @RequestMapping("/professor")
 @RequiredArgsConstructor
 public class ProfessorController {
-    private final ProfessorRepository professorRepository;
     private final ProfessorServiceImpl professorService;
 
     @GetMapping("/{id_professor}")

@@ -2,6 +2,7 @@ package com.senai.classline.service.impl;
 
 import com.senai.classline.domain.curso.Curso;
 import com.senai.classline.domain.grade.Grade;
+import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.dto.curso.CursoResponseDTO;
 import com.senai.classline.dto.turma.TurmaDTO;
@@ -11,6 +12,7 @@ import com.senai.classline.exceptions.curso.CursoNotFound;
 import com.senai.classline.exceptions.turma.TurmaNotFound;
 import com.senai.classline.repositories.CursoRepository;
 import com.senai.classline.repositories.GradeRepository;
+import com.senai.classline.repositories.SemestreRepository;
 import com.senai.classline.repositories.TurmaRepository;
 import com.senai.classline.service.TurmaService;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class TurmaServiceImpl implements TurmaService {
     private final TurmaRepository repository;
     private final CursoRepository cursoRepository;
     private final GradeRepository gradeRepository;
+    private final SemestreRepository semestreRepository;
 
     @Override
     public Turma criar(Long id_curso, TurmaDTO body) {
@@ -50,7 +53,17 @@ public class TurmaServiceImpl implements TurmaService {
         Grade grade = new Grade();
         grade.setDescricao("Grade curricular referente à turma " + turma.getNome());
         grade.setTurma(newTurma);
-        turma.setGrade(gradeRepository.save(grade));
+        Grade newGrade =  gradeRepository.save(grade);
+        turma.setGrade(newGrade);
+
+        for (int nroSemestre = 1; nroSemestre <= newTurma.getCurso().getQtde_semestres(); nroSemestre++) {
+            Semestre semestre = new Semestre();
+            semestre.setSemestre(nroSemestre);
+            semestre.setGrade(newGrade);
+            Semestre newSemestre = semestreRepository.save(semestre);
+            System.out.println(newSemestre);
+        }
+
         return newTurma;
     }
 
@@ -190,7 +203,6 @@ public class TurmaServiceImpl implements TurmaService {
                     cursoEntity.getTipo(),
                     cursoEntity.getAtivo()
             );
-
 
             List<Turma> turmasDoCurso = repository.findByCurso_idCurso(cursoEntity.getIdCurso());
 

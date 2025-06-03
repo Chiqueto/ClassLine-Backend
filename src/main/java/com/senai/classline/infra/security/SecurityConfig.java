@@ -107,6 +107,22 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    @Order(6)
+    public SecurityFilterChain semestreSecurity(HttpSecurity http) throws Exception {
+        http
+                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
+                .securityMatcher("/semestre/**")
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtSecurityFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
     // 🔑 Encoder padrão
     @Bean
     public PasswordEncoder passwordEncoder() {
