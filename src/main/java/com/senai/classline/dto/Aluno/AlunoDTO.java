@@ -46,7 +46,6 @@ public record AlunoDTO(
         String telefone,
         @NotNull(message = "Turno não pode ser nulo")
         Turno turno,
-        @NotNull(message = "Status não pode ser nulo")
         StatusPessoa status,
         @NotNull(message = "Turma não pode ser nula")
         Long id_turma,
@@ -54,7 +53,6 @@ public record AlunoDTO(
         Long id_curso,
         @NotNull(message = "Data de início não pode ser nula")
         Date dt_inicio,
-        @NotNull(message = "Data de fim não pode ser nula")
         Date dt_fim
 ) {
 

@@ -72,9 +72,7 @@ public class AlunoServiceImpl implements AlunoService {
                 .orElseThrow(() -> new NotFoundException("Curso não encontrado com ID: " + alunoDTO.id_curso()));
 
 
-        if (!turma.getCurso().getIdCurso().equals(curso.getIdCurso())) {
-            throw new IllegalArgumentException("Turma não pertence ao curso especificado.");
-         }
+
          String idInstituicaoContext = turma.getCurso().getInstituicao().getIdInstituicao();
 
         Aluno aluno = new Aluno();
