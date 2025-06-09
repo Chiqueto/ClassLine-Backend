@@ -230,17 +230,13 @@ public class TurmaServiceImpl implements TurmaService {
     @Override
     public List<TurmaResponseDTO> getTurmasByProfessor(String idProfessor) {
         Optional<Professor> professor = professorRepository.findByIdProfessor(idProfessor);
-        System.out.println("Entrei aqui haha");
         List<TurmaResponseDTO> turmasDTO = new ArrayList<>();
-        System.out.println(professor);
 
         if(professor.isEmpty()){
             return turmasDTO;
         }
-        System.out.println(turmasDTO);
 
         List<Turma> turmasEntity = repository.findTurmasByProfessorId(idProfessor);
-        System.out.println(turmasEntity);
 
         for (Turma turmaEntity : turmasEntity) {
             Curso cursoEntity = turmaEntity.getCurso();
@@ -269,8 +265,7 @@ public class TurmaServiceImpl implements TurmaService {
             );
             turmasDTO.add(turmaDTO);
         }
-        System.out.println("Passou do for");
-        System.out.println(turmasDTO);
+
         return turmasDTO;
 
     }
