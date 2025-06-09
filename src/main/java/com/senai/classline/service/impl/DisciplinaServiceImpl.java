@@ -42,7 +42,14 @@ public class DisciplinaServiceImpl implements DisciplinaService {
 
 
         this.repository.save(newDisciplina);
-        return toResponseDTO(newDisciplina);
+        DisciplinaResponseDTO disciplina =  new DisciplinaResponseDTO(
+                newDisciplina.getIdDisciplina(),
+                newDisciplina.getNome(),
+                newDisciplina.getCarga_horaria(),
+                newDisciplina.isStatus(),
+                newDisciplina.getInstituicao().getIdInstituicao()
+        );
+        return (disciplina);
     }
 
     @Override
