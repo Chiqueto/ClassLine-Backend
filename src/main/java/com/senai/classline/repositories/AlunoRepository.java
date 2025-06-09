@@ -2,6 +2,8 @@ package com.senai.classline.repositories;
 
 import com.senai.classline.domain.aluno.Aluno;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,5 +15,13 @@ public interface AlunoRepository extends JpaRepository<Aluno, String> {
 
     List<Aluno> findByCurso_idCurso(Long idCurso);
     List<Aluno> findByTurma_idTurma(Long idTurma);
+
+    @Query("SELECT DISTINCT a FROM Aluno a " +
+            "JOIN a.turma t " +
+            "JOIN t.grade g " +          // Turma -> Grade
+            "JOIN g.semestres s " +        // Grade -> Semestre
+            "JOIN s.disciplinasSemestre ds " + // Semestre -> DisciplinaSemestre
+            "WHERE ds.disciplina.id = :disciplinaId")
+    List<Aluno> findAlunosByDisciplinaId(@Param("disciplinaId") Long disciplinaId);
 }
 

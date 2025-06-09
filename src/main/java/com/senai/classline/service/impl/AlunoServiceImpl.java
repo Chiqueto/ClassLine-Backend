@@ -15,10 +15,7 @@ import com.senai.classline.exceptions.global.LoginFail; // Assuming this excepti
 import com.senai.classline.exceptions.global.NotFoundException;
 import com.senai.classline.exceptions.global.UnauthorizedException; // Generic unauthorized
 import com.senai.classline.infra.security.TokenService; // To be injected
-import com.senai.classline.repositories.AlunoRepository;
-import com.senai.classline.repositories.CursoRepository;
-import com.senai.classline.repositories.InstituicaoRepository; // To be injected for getByInstituicao
-import com.senai.classline.repositories.TurmaRepository;
+import com.senai.classline.repositories.*;
 import com.senai.classline.service.AlunoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder; // To be injected
@@ -29,7 +26,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 @Service
-// @RequiredArgsConstructor will handle the new final fields
+@RequiredArgsConstructor
 public class AlunoServiceImpl implements AlunoService {
     private final AlunoRepository alunoRepository; // Renamed from 'repository' for clarity
     private final TurmaRepository turmaRepository;
@@ -37,6 +34,7 @@ public class AlunoServiceImpl implements AlunoService {
     private final PasswordEncoder passwordEncoder; // Added
     private final TokenService tokenService;       // Added
     private final InstituicaoRepository instituicaoRepository; // Added for getByInstituicao consistency
+    private final DisciplinaRepository disciplinaRepository;
 
     // Updated constructor for @RequiredArgsConstructor
     public AlunoServiceImpl(
@@ -237,5 +235,16 @@ public class AlunoServiceImpl implements AlunoService {
         }
 
         return todosAlunosDaInstituicao;
+    }
+
+
+    public List<Aluno> getAlunoByDisciplina(Long disciplinaId) {
+        // Passo opcional, mas recomendado: verificar se a disciplina existe
+        if (!disciplinaRepository.existsById(disciplinaId)) {
+            throw new NotFoundException("Disciplina com o ID informado não foi encontrada.");
+        }
+
+        // Chama o método do repositório que faz a busca complexa
+        return alunoRepository.findAlunosByDisciplinaId(disciplinaId);
     }
 }

@@ -25,5 +25,6 @@ public interface AlunoService {
     List<Aluno> getByTurma(Long idTurma);
     List<Aluno> getByCurso(Long idCurso);
     List<Aluno> getByInstituicao(String idInstituicao);
+    List<Aluno> getAlunoByDisciplina(Long idDisciplina);
 
 }
