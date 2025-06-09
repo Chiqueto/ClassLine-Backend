@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/disciplinasemestre")
 @RequiredArgsConstructor
-public class DisciplinaSemestre {
+public class DisciplinaSemestreController {
     private final DisciplinaSemestreService service;
 
     @PreAuthorize("hasRole('INSTITUICAO')")

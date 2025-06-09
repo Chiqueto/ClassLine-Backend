@@ -1,7 +1,6 @@
 package com.senai.classline.controllers.disciplina;
 
-import com.senai.classline.domain.disciplina.Disciplina;
-import com.senai.classline.domain.instituicao.Instituicao;
+
 import com.senai.classline.dto.disciplina.DisciplinaDTO;
 import com.senai.classline.dto.disciplina.DisciplinaResponseDTO;
 import com.senai.classline.service.impl.DisciplinaServiceImpl;
