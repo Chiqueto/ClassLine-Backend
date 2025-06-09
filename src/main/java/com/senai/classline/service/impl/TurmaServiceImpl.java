@@ -2,18 +2,17 @@ package com.senai.classline.service.impl;
 
 import com.senai.classline.domain.curso.Curso;
 import com.senai.classline.domain.grade.Grade;
+import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.dto.curso.CursoResponseDTO;
+import com.senai.classline.dto.instituicao.InstituicaoDTO;
 import com.senai.classline.dto.turma.TurmaDTO;
 import com.senai.classline.dto.turma.TurmaEditarDTO;
 import com.senai.classline.dto.turma.TurmaResponseDTO;
 import com.senai.classline.exceptions.curso.CursoNotFound;
 import com.senai.classline.exceptions.turma.TurmaNotFound;
-import com.senai.classline.repositories.CursoRepository;
-import com.senai.classline.repositories.GradeRepository;
-import com.senai.classline.repositories.SemestreRepository;
-import com.senai.classline.repositories.TurmaRepository;
+import com.senai.classline.repositories.*;
 import com.senai.classline.service.TurmaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +28,7 @@ public class TurmaServiceImpl implements TurmaService {
     private final CursoRepository cursoRepository;
     private final GradeRepository gradeRepository;
     private final SemestreRepository semestreRepository;
+    private final ProfessorRepository professorRepository;
 
     @Override
     public Turma criar(Long id_curso, TurmaDTO body) {
@@ -112,7 +112,7 @@ public class TurmaServiceImpl implements TurmaService {
         Curso cursoEntity = turmaEntity.getCurso();
         CursoResponseDTO curso = new CursoResponseDTO(
                cursoEntity.getIdCurso(),
-                cursoEntity.getInstituicao(),
+                cursoEntity.getInstituicao().getIdInstituicao(),
                 cursoEntity.getNome(),
                 cursoEntity.getDescricao(),
                 cursoEntity.getQtde_semestres(),
@@ -128,7 +128,7 @@ public class TurmaServiceImpl implements TurmaService {
                 turmaEntity.getDt_fim(),
                 turmaEntity.getAtivo(),
                 curso,
-                turmaEntity.getGrade()
+                turmaEntity.getGrade().getIdGrade()
         );
         System.out.println(turmaDTO.curso());
         return turmaDTO;
@@ -156,7 +156,7 @@ public class TurmaServiceImpl implements TurmaService {
 
             CursoResponseDTO cursoDTO = new CursoResponseDTO(
                     cursoEntity.getIdCurso(),
-                    cursoEntity.getInstituicao(),
+                    cursoEntity.getInstituicao().getIdInstituicao(),
                     cursoEntity.getNome(),
                     cursoEntity.getDescricao(),
                     cursoEntity.getQtde_semestres(),
@@ -173,7 +173,7 @@ public class TurmaServiceImpl implements TurmaService {
                     turmaEntity.getDt_fim(),
                     turmaEntity.getAtivo(),
                     cursoDTO,
-                    turmaEntity.getGrade()
+                    turmaEntity.getGrade().getIdGrade()
             );
             turmasDTO.add(turmaDTO);
         }
@@ -196,7 +196,7 @@ public class TurmaServiceImpl implements TurmaService {
 
             CursoResponseDTO cursoDTO = new CursoResponseDTO(
                     cursoEntity.getIdCurso(),
-                    cursoEntity.getInstituicao(),
+                    cursoEntity.getInstituicao().getIdInstituicao(),
                     cursoEntity.getNome(),
                     cursoEntity.getDescricao(),
                     cursoEntity.getQtde_semestres(),
@@ -218,12 +218,60 @@ public class TurmaServiceImpl implements TurmaService {
                             turmaEntity.getDt_fim(),
                             turmaEntity.getAtivo(),
                             cursoDTO,
-                            turmaEntity.getGrade()
+                            turmaEntity.getGrade().getIdGrade()
                     );
                     todasAsTurmasDTO.add(turmaDTO);
                 }
             }
         }
         return todasAsTurmasDTO;
+    }
+
+    @Override
+    public List<TurmaResponseDTO> getTurmasByProfessor(String idProfessor) {
+        Optional<Professor> professor = professorRepository.findByIdProfessor(idProfessor);
+        System.out.println("Entrei aqui haha");
+        List<TurmaResponseDTO> turmasDTO = new ArrayList<>();
+        System.out.println(professor);
+
+        if(professor.isEmpty()){
+            return turmasDTO;
+        }
+        System.out.println(turmasDTO);
+
+        List<Turma> turmasEntity = repository.findTurmasByProfessorId(idProfessor);
+        System.out.println(turmasEntity);
+
+        for (Turma turmaEntity : turmasEntity) {
+            Curso cursoEntity = turmaEntity.getCurso();
+
+
+            CursoResponseDTO cursoDTO = new CursoResponseDTO(
+                    cursoEntity.getIdCurso(),
+                    cursoEntity.getInstituicao().getIdInstituicao(),
+                    cursoEntity.getNome(),
+                    cursoEntity.getDescricao(),
+                    cursoEntity.getQtde_semestres(),
+                    cursoEntity.getTipo(),
+                    cursoEntity.getAtivo()
+            );
+
+            TurmaResponseDTO turmaDTO = new TurmaResponseDTO(
+                    turmaEntity.getIdTurma(),
+                    turmaEntity.getNome(),
+                    turmaEntity.getObservacao(),
+                    turmaEntity.getTurno(),
+                    turmaEntity.getDt_inicio(),
+                    turmaEntity.getDt_fim(),
+                    turmaEntity.getAtivo(),
+                    cursoDTO,
+                    turmaEntity.getGrade().getIdGrade()
+            );
+            turmasDTO.add(turmaDTO);
+        }
+        System.out.println("Passou do for");
+        System.out.println(turmasDTO);
+        return turmasDTO;
+
     }
 }

@@ -17,7 +17,7 @@ public record TurmaResponseDTO (
      Date dt_fim,
      Boolean ativo,
      CursoResponseDTO curso,
-     Grade grade
+     Long idGrade
 )
 {
 }

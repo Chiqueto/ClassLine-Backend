@@ -64,5 +64,10 @@ public class TurmaController {
         return ResponseEntity.status(HttpStatus.OK).body(turmas);
     }
 
-
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
+    @GetMapping("/professor/{id_professor}")
+    public ResponseEntity getTurmaByProfessor(@PathVariable String id_professor){
+        List<TurmaResponseDTO> turmas = this.service.getTurmasByProfessor(id_professor);
+        return ResponseEntity.status(HttpStatus.OK).body(turmas);
+    }
 }

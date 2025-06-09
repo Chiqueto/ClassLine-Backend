@@ -19,13 +19,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProfessorController {
     private final ProfessorServiceImpl professorService;
-
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
     @GetMapping("/{id_professor}")
     public ResponseEntity<Professor> getProfessorById(@PathVariable String id_professor){
         Professor professor = professorService.getById(id_professor) ;
         return ResponseEntity.status(HttpStatus.OK).body(professor);
     }
-
+    @PreAuthorize("hasRole('INSTITUICAO')")
     @GetMapping("/instituicao/{id_instituicao}")
     public ResponseEntity<List<Professor>> getProfessorByInstituicao(@PathVariable String id_instituicao){
         List<Professor> professores = professorService.getByInstituicao(id_instituicao) ;

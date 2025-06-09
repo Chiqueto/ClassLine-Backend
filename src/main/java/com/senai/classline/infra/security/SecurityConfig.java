@@ -144,7 +144,7 @@ public class SecurityConfig {
     public SecurityFilterChain discilpinaSemestreSecurity(HttpSecurity http) throws Exception {
         http
                 .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
-                .securityMatcher("/discplina/**")
+                .securityMatcher("/discplinasemestre/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth

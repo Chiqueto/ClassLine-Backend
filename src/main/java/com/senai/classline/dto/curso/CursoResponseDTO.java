@@ -9,7 +9,7 @@ import java.util.List;
 
 public record CursoResponseDTO(
 Long idCurso,
-Instituicao instituicao,
+String idInstituicao,
 String nome,
 String descricao,
 int qtde_semestres,
