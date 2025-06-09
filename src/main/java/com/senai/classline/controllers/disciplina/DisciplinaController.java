@@ -39,6 +39,13 @@ public class DisciplinaController {
         return ResponseEntity.status(HttpStatus.OK).body(disciplina);
     }
 
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
+    @GetMapping("/turma/{id_turma}")
+    public ResponseEntity<List<DisciplinaResponseDTO>> getDisciplinaByTurma(@PathVariable Long id_turma){
+        final List<DisciplinaResponseDTO> disciplinas = this.service.getDisciplinaByTurma(id_turma);
+        return ResponseEntity.status(HttpStatus.OK).body(disciplinas);
+    }
+
     @PreAuthorize("hasRole('INSTITUICAO')")
     @DeleteMapping("/{id_disciplina}/{id_instituicao}")
     public ResponseEntity<DisciplinaResponseDTO> inactivateDisciplina(@PathVariable Long id_disciplina, @PathVariable String id_instituicao){

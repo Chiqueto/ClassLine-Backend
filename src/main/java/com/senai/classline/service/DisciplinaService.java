@@ -13,4 +13,6 @@ public interface DisciplinaService {
     DisciplinaResponseDTO getDisciplinaById(Long id_disciplina);
 
     List<DisciplinaResponseDTO> getDisciplinaByInstituicao(String id_instituicao);
+
+    List<DisciplinaResponseDTO> getDisciplinaByTurma(Long id_turma);
 }

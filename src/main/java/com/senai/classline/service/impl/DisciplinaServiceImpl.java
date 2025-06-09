@@ -2,6 +2,7 @@ package com.senai.classline.service.impl;
 
 import com.senai.classline.domain.disciplina.Disciplina;
 import com.senai.classline.domain.instituicao.Instituicao;
+import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.dto.disciplina.DisciplinaDTO;
 import com.senai.classline.dto.disciplina.DisciplinaResponseDTO;
 import com.senai.classline.exceptions.curso.CursoAlreadyExists;
@@ -9,6 +10,7 @@ import com.senai.classline.exceptions.global.NotFoundException;
 import com.senai.classline.exceptions.instituicao.InstituicaoNotFound;
 import com.senai.classline.repositories.DisciplinaRepository;
 import com.senai.classline.repositories.InstituicaoRepository;
+import com.senai.classline.repositories.TurmaRepository;
 import com.senai.classline.service.DisciplinaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class DisciplinaServiceImpl implements DisciplinaService {
     private final DisciplinaRepository repository;
     private final InstituicaoRepository instituicaoRepository;
+    private final TurmaRepository turmaRepository;
 
     @Override
     public DisciplinaResponseDTO criar(String id_instituicao, DisciplinaDTO body) {
@@ -80,6 +83,18 @@ public class DisciplinaServiceImpl implements DisciplinaService {
                 .orElseThrow(InstituicaoNotFound::new);
 
         List<Disciplina> disciplinas = repository.findAllByInstituicao(instituicao);
+
+        return disciplinas.stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DisciplinaResponseDTO> getDisciplinaByTurma(Long id_turma) {
+        Turma turma = turmaRepository.findById(id_turma)
+                .orElseThrow(() -> new NotFoundException("Turma não encontrada"));
+
+        List<Disciplina> disciplinas = repository.findDisciplinasByTurmaId(id_turma);
 
         return disciplinas.stream()
                 .map(this::toResponseDTO)

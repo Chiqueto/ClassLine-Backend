@@ -1,6 +1,7 @@
 package com.senai.classline.domain.disciplina;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestre;
 import com.senai.classline.domain.instituicao.Instituicao;
 import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.enums.Tipo;
@@ -29,7 +30,8 @@ public class Disciplina {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_instituicao", referencedColumnName = "id_instituicao")
     private Instituicao instituicao;
-
+    @OneToMany(mappedBy = "disciplina", fetch = FetchType.LAZY)
+    private List<DisciplinaSemestre> disciplinasSemestre;
 
 
 }
