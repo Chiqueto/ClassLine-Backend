@@ -5,19 +5,23 @@ import com.senai.classline.domain.instituicao.Instituicao;
 import com.senai.classline.dto.disciplina.DisciplinaDTO;
 import com.senai.classline.dto.disciplina.DisciplinaResponseDTO;
 import com.senai.classline.exceptions.curso.CursoAlreadyExists;
+import com.senai.classline.exceptions.global.NotFoundException;
 import com.senai.classline.exceptions.instituicao.InstituicaoNotFound;
 import com.senai.classline.repositories.DisciplinaRepository;
+import com.senai.classline.repositories.InstituicaoRepository;
 import com.senai.classline.service.DisciplinaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DisciplinaServiceImpl implements DisciplinaService {
     private final DisciplinaRepository repository;
+    private final InstituicaoRepository instituicaoRepository;
 
     @Override
     public DisciplinaResponseDTO criar(String id_instituicao, DisciplinaDTO body) {
@@ -29,27 +33,59 @@ public class DisciplinaServiceImpl implements DisciplinaService {
         if(instituicaoExists.isEmpty()){
             throw new InstituicaoNotFound();
         }
-        Disciplina newCurso = new Disciplina();
-        newCurso.setNome(body.nome());
-        newCurso.setInstituicao(instituicaoExists.get());
-        newCurso.setCarga_horario(body.carga_horaria());
-        newCurso.setStatus(true);
 
-        return this.repository.save(newCurso);
+        Disciplina newDisciplina = new Disciplina();
+        newDisciplina.setNome(body.nome());
+        newDisciplina.setInstituicao(instituicaoExists.get());
+        newDisciplina.setCarga_horaria(body.carga_horaria());
+        newDisciplina.setStatus(true);
+
+
+        this.repository.save(newDisciplina);
+        return toResponseDTO(newDisciplina);
     }
 
     @Override
-    public Disciplina inativar(Long id_disciplina, String id_instituicao) {
-        return null;
+    public DisciplinaResponseDTO inativar(Long id_disciplina, String id_instituicao) {
+        Instituicao instituicao = instituicaoRepository.findByIdInstituicao(id_instituicao)
+                .orElseThrow(InstituicaoNotFound::new);
+
+        Disciplina disciplina = repository.findByIdDisciplinaAndInstituicao(id_disciplina, instituicao)
+                .orElseThrow(() -> new NotFoundException("Disciplina não encontrada ou não pertence a esta instituição."));
+
+        disciplina.setStatus(false);
+        repository.save(disciplina);
+
+        return toResponseDTO(disciplina);
     }
 
     @Override
-    public Disciplina getDisciplinaById(Long id_disciplina) {
-        return null;
+    public DisciplinaResponseDTO getDisciplinaById(Long id_disciplina) {
+        Disciplina disciplina = repository.findById(id_disciplina)
+                .orElseThrow(() -> new NotFoundException("Disciplina com o ID informado não foi encontrada."));
+
+        return toResponseDTO(disciplina);
     }
 
     @Override
-    public List<Disciplina> getDisciplinaByInstituicao(String id_instituicao) {
-        return List.of();
+    public List<DisciplinaResponseDTO> getDisciplinaByInstituicao(String id_instituicao) {
+        Instituicao instituicao = instituicaoRepository.findByIdInstituicao(id_instituicao)
+                .orElseThrow(InstituicaoNotFound::new);
+
+        List<Disciplina> disciplinas = repository.findAllByInstituicao(instituicao);
+
+        return disciplinas.stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    private DisciplinaResponseDTO toResponseDTO(Disciplina disciplina) {
+        return new DisciplinaResponseDTO(
+                disciplina.getIdDisciplina(),
+                disciplina.getNome(),
+                disciplina.getCarga_horaria(),
+                disciplina.isStatus(),
+                disciplina.getInstituicao().getIdInstituicao()
+        );
     }
 }

@@ -24,9 +24,12 @@ public class Disciplina {
     @Column(name = "id_disciplina")
     private Long idDisciplina;
     private String nome;
-    private int carga_horario;
+    private int carga_horaria;
     private boolean status;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_instituicao", referencedColumnName = "id_instituicao")
     private Instituicao instituicao;
+
+
+
 }
