@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 @Entity
 @Table(name = "aula")
@@ -30,7 +31,7 @@ public class Aula {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_disciplina", referencedColumnName = "id_disciplina")
     private Disciplina disciplina;
-    private Date data;
+    private LocalDate data;
     private String conteudo;
 
 }
