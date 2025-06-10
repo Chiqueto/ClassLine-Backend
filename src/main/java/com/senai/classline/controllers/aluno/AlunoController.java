@@ -32,29 +32,29 @@ public class AlunoController {
 
     @PreAuthorize("hasRole('INSTITUICAO') or (hasRole('ALUNO') and #id_aluno == principal.id)")
     @GetMapping("/{id_aluno}")
-    public ResponseEntity<Aluno> getAlunoById(@PathVariable String id_aluno) {
-        Aluno aluno = alunoService.getById(id_aluno);
+    public ResponseEntity<AlunoResponseDTO> getAlunoById(@PathVariable String id_aluno) {
+        AlunoResponseDTO aluno = alunoService.getById(id_aluno);
         return ResponseEntity.status(HttpStatus.OK).body(aluno);
     }
 
     @PreAuthorize("hasRole('INSTITUICAO')")
     @GetMapping("/instituicao/{id_instituicao}")
-    public ResponseEntity<List<Aluno>> getAlunoByInstituicao(@PathVariable String id_instituicao) {
-        List<Aluno> alunos = alunoService.getByInstituicao(id_instituicao);
+    public ResponseEntity<List<AlunoResponseDTO>> getAlunoByInstituicao(@PathVariable String id_instituicao) {
+        List<AlunoResponseDTO> alunos = alunoService.getByInstituicao(id_instituicao);
         return ResponseEntity.status(HttpStatus.OK).body(alunos);
     }
 
     @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
     @GetMapping("/turma/{id_turma}")
-    public ResponseEntity<List<Aluno>> getAlunoByTurma(@PathVariable Long id_turma) {
-        List<Aluno> alunos = alunoService.getByTurma(id_turma);
+    public ResponseEntity<List<AlunoResponseDTO>> getAlunoByTurma(@PathVariable Long id_turma) {
+        List<AlunoResponseDTO> alunos = alunoService.getByTurma(id_turma);
         return ResponseEntity.status(HttpStatus.OK).body(alunos);
     }
 
     @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
     @GetMapping("/curso/{id_curso}")
-    public ResponseEntity<List<Aluno>> getAlunoByCurso(@PathVariable Long id_curso) {
-        List<Aluno> alunos = alunoService.getByCurso(id_curso);
+    public ResponseEntity<List<AlunoResponseDTO>> getAlunoByCurso(@PathVariable Long id_curso) {
+        List<AlunoResponseDTO> alunos = alunoService.getByCurso(id_curso);
         return ResponseEntity.status(HttpStatus.OK).body(alunos);
     }
 
@@ -63,8 +63,8 @@ public class AlunoController {
     public ResponseEntity<String> updateAluno(
             @PathVariable String id_aluno,
             @RequestBody @Valid AlunoEditarDTO alunoEditarDTO) {
-        Aluno alunoEditado = this.alunoService.editar(alunoEditarDTO, id_aluno);
-        return ResponseEntity.status(HttpStatus.OK).body("Aluno '" + alunoEditado.getNome() + "' editado com sucesso!");
+        AlunoResponseDTO alunoEditado = this.alunoService.editar(alunoEditarDTO, id_aluno);
+        return ResponseEntity.status(HttpStatus.OK).body("Aluno '" + alunoEditado.nome() + "' editado com sucesso!");
     }
 
     @PreAuthorize("hasRole('INSTITUICAO')")
@@ -72,5 +72,12 @@ public class AlunoController {
     public ResponseEntity<Void> inactiveAluno(@PathVariable String id_aluno) {
         alunoService.inativar(id_aluno);
         return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
+    @GetMapping("/disciplina/{id_disciplina}")
+    public ResponseEntity<List<AlunoResponseDTO>> getAlunoByDisciplina(@PathVariable Long id_disciplina) {
+        List<AlunoResponseDTO> alunos = alunoService.getAlunoByDisciplina(id_disciplina);
+        return ResponseEntity.status(HttpStatus.OK).body(alunos);
     }
 }

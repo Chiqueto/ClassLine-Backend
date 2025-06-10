@@ -25,12 +25,12 @@ public class Aluno extends Pessoa {
     @Column(name = "id_aluno")
     private String idAluno;
     @JoinColumn(name = "id_turma", referencedColumnName = "id_turma")
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+
     private Turma turma;
     @JoinColumn(name = "id_curso", referencedColumnName = "id_curso")
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    
     private Curso curso;
     private Date dt_inicio;
     private Date dt_fim;

@@ -14,7 +14,7 @@ import java.util.Date;
 
 public record AlunoResponseDTO (
 
-        String id_instituicao,
+        String idInstituicao,
 
         String nome,
 
@@ -35,12 +35,12 @@ public record AlunoResponseDTO (
 
         StatusPessoa status,
 
-        Turma turma,
-
-        Curso curso,
-
         Date dt_inicio,
 
-        Date dt_fim
+        Date dt_fim,
+
+        Long idTurma,
+
+        Long idCurso
 ) {
 }

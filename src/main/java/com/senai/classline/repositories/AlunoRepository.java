@@ -19,7 +19,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, String> {
     @Query("SELECT DISTINCT a FROM Aluno a " +
             "JOIN a.turma t " +
             "JOIN t.grade g " +          // Turma -> Grade
-            "JOIN g.semestres s " +        // Grade -> Semestre
+            "JOIN g.semestre s " +        // Grade -> Semestre
             "JOIN s.disciplinasSemestre ds " + // Semestre -> DisciplinaSemestre
             "WHERE ds.disciplina.id = :disciplinaId")
     List<Aluno> findAlunosByDisciplinaId(@Param("disciplinaId") Long disciplinaId);
