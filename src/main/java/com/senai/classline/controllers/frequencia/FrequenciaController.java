@@ -7,6 +7,7 @@ import com.senai.classline.dto.frequencia.FrequenciaResponseDTO;
 import com.senai.classline.dto.frequencia.LancarFrequenciaRequest;
 import com.senai.classline.service.FrequenciaService;
 import com.senai.classline.service.impl.FrequenciaServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -28,7 +29,7 @@ public class FrequenciaController {
     public ResponseEntity<List<FrequenciaResponseDTO>> lancarFrequencia(
             @PathVariable Long idDisciplina,
             @PathVariable String idProfessor,
-            @RequestBody LancarFrequenciaRequest request
+            @RequestBody @Valid LancarFrequenciaRequest request
     ) {
         List<FrequenciaResponseDTO> response = service.lancarFrequencia(
                 request.presencas(),

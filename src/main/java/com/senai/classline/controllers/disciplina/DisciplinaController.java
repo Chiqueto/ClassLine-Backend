@@ -4,6 +4,7 @@ package com.senai.classline.controllers.disciplina;
 import com.senai.classline.dto.disciplina.DisciplinaDTO;
 import com.senai.classline.dto.disciplina.DisciplinaResponseDTO;
 import com.senai.classline.service.impl.DisciplinaServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class DisciplinaController {
 
     @PreAuthorize("hasRole('INSTITUICAO')")
     @PostMapping("/{id_instituicao}")
-    public ResponseEntity<DisciplinaResponseDTO> createDisciplina(@PathVariable String id_instituicao, @RequestBody DisciplinaDTO body){
+    public ResponseEntity<DisciplinaResponseDTO> createDisciplina(@PathVariable String id_instituicao, @RequestBody @Valid DisciplinaDTO body){
         final DisciplinaResponseDTO disciplina = this.service.criar(id_instituicao, body);
         return ResponseEntity.status(HttpStatus.CREATED).body(disciplina);
     }
