@@ -1,11 +1,14 @@
 package com.senai.classline.controllers.disciplinasemestre;
 
+import com.senai.classline.dto.disciplinaSemestre.DisciplinaSemestreResponseDTO;
 import com.senai.classline.service.DisciplinaSemestreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/disciplinasemestre")
@@ -41,6 +44,12 @@ public class DisciplinaSemestreController {
             @PathVariable String idProfessor) {
         service.inactivateSemester(idDisciplina, idSemestre, idProfessor);
         return ResponseEntity.ok("Disciplina inativada com sucesso!");
+    }
+
+    @GetMapping("/turma/{idTurma}")
+    public ResponseEntity<List<DisciplinaSemestreResponseDTO>> buscarPorTurma(@PathVariable Long idTurma) {
+        List<DisciplinaSemestreResponseDTO> gradeDaTurma = service.getGradeByTurma(idTurma);
+        return ResponseEntity.ok(gradeDaTurma);
     }
 
 }
