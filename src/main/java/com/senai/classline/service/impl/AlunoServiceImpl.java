@@ -241,6 +241,7 @@ public class AlunoServiceImpl implements AlunoService {
         Long idCurso = (aluno.getCurso() != null) ? aluno.getCurso().getIdCurso() : null;
 
         return new AlunoResponseDTO(
+                aluno.getIdAluno(),
                 idInstituicao,
                 aluno.getNome(),
                 aluno.getEmail(),

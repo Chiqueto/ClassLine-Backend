@@ -3,6 +3,7 @@ package com.senai.classline.domain.aluno;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.senai.classline.domain.curso.Curso;
 import com.senai.classline.domain.instituicao.Instituicao;
+import com.senai.classline.domain.nota.Nota;
 import com.senai.classline.domain.pessoa.Pessoa;
 import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.enums.Formacao;
@@ -13,6 +14,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Set;
+
 @Entity
 @Table(name = "aluno")
 @Getter
@@ -34,6 +37,9 @@ public class Aluno extends Pessoa {
     private Curso curso;
     private Date dt_inicio;
     private Date dt_fim;
+
+    @OneToMany(mappedBy = "idNota", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Nota> nota;
 
 
     @Override

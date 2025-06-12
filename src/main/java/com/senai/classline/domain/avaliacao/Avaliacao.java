@@ -1,6 +1,7 @@
 package com.senai.classline.domain.avaliacao;
 
 import com.senai.classline.domain.disciplina.Disciplina;
+import com.senai.classline.domain.nota.Nota;
 import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.domain.turma.Turma;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Table(name = "avaliacao")
@@ -45,4 +47,6 @@ public class Avaliacao {
     private LocalDate data;
     @NotNull
     private Boolean concluida;
+    @OneToMany(mappedBy = "idNota", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Nota> nota;
 }
