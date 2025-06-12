@@ -33,4 +33,14 @@ public class AvaliacaoController {
         // Retorna o status 201 CREATED, que é semanticamente correto para POST
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
+    @GetMapping("/disciplina/{idDisciplina}/professor/{idProfessor}/turma/{idTurma}")
+    public ResponseEntity <List<AvaliacaoResponseDTO>> buscarAvaliacoesByProfessor(
+            @PathVariable Long idDisciplina,
+            @PathVariable String idProfessor,
+            @PathVariable Long idTurma){
+        List<AvaliacaoResponseDTO> response = this.service.getByProfessorTurmaAndDisciplina( idProfessor, idDisciplina, idTurma);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

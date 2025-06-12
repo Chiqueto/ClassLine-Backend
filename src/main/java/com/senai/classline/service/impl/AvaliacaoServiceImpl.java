@@ -15,6 +15,9 @@ import com.senai.classline.service.AvaliacaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class AvaliacaoServiceImpl implements AvaliacaoService {
@@ -45,6 +48,20 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
         Avaliacao avaliacao = repository.save(newAvaliacao);
 
         return convertToResponseDTO(avaliacao);
+    }
+
+    @Override
+    public List<AvaliacaoResponseDTO> getByProfessorTurmaAndDisciplina(String idProfessor, Long idDisciplina, Long idTurma) {
+        List<Avaliacao> avaliacoes = repository.findByTurmaAndProfessorAndDisciplina(
+                idTurma,
+                idProfessor,
+                idDisciplina
+        );
+
+        // Converte a lista de entidades para DTOs antes de retornar
+        return avaliacoes.stream()
+                .map(this::convertToResponseDTO) // Usando o método que criamos antes
+                .collect(Collectors.toList());
     }
 
     private AvaliacaoResponseDTO convertToResponseDTO(Avaliacao avaliacao) {

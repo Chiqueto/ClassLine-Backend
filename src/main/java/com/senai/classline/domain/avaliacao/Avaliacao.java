@@ -35,6 +35,7 @@ public class Avaliacao {
     @JoinColumn(name = "id_disciplina", referencedColumnName = "id_disciplina")
     private Disciplina disciplina;
     @NotNull
+    @Enumerated(value= EnumType.STRING)
     private TipoProva tipo;
     @NotNull
     private String nome;

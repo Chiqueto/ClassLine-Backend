@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AlunoAuthController {
 
-    private final AlunoRepository repository;
-    private final TokenService tokenService;
     private final AlunoService service;
 
     @PostMapping("/login")
