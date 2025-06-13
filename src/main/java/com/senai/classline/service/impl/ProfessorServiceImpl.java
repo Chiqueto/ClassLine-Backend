@@ -140,7 +140,7 @@ public class ProfessorServiceImpl implements ProfessorService {
         }
 
         String token = professorTokenService.generateToken(professor.get(), UserType.PROFESSOR);
-        return new ResponseDTO(professor.get().getInstituicao().getIdInstituicao(), token);
+        return new ResponseDTO(professor.get().getIdProfessor(), token);
     }
 
     @Override
