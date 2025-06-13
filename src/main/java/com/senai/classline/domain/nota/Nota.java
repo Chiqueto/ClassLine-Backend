@@ -3,10 +3,7 @@ package com.senai.classline.domain.nota;
 import com.senai.classline.domain.aluno.Aluno;
 import com.senai.classline.domain.avaliacao.Avaliacao;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "nota")
@@ -14,6 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Nota {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
