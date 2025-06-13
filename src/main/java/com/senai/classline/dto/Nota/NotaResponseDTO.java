@@ -1,6 +1,6 @@
 package com.senai.classline.dto.Nota;
 
-import com.senai.classline.domain.nota.Nota;
+import com.senai.classline.domain.nota.NotaDetalhesDTO;
 
 import java.util.Set;
 
