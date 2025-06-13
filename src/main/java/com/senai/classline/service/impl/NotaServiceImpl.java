@@ -93,9 +93,10 @@ public class NotaServiceImpl implements NotaService {
         //    Isso evita o erro de serialização do Hibernate (Lazy Loading).
         Set<NotaDetalhesDTO> notasDetalhes = notasSalvas.stream()
                 .map(nota -> new NotaDetalhesDTO(
+                        nota.getAluno().getIdAluno(),
                         nota.getIdNota(),
                         nota.getValor(),
-                        nota.getAluno().getNome() // Assumindo que Aluno tem o método getNome()
+                        nota.getAluno().getNome()
                 ))
                 .collect(Collectors.toSet());
 
@@ -106,5 +107,28 @@ public class NotaServiceImpl implements NotaService {
                 mensagem,
                 notasDetalhes // <-- Usando o Set de DTOs, não mais o de Entidades
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<NotaDetalhesDTO> getNotasByAvaliacao(Long idAvaliacao) {
+        // 1. A validação de existência da avaliação continua sendo uma ótima prática.
+        if (!avaliacaoRepository.existsById(idAvaliacao)) {
+            throw new NotFoundException("Avaliação não encontrada com o ID: " + idAvaliacao);
+        }
+
+        // 2. Busca as notas usando o novo método OTIMIZADO do repositório.
+        List<Nota> notasDoBanco = repository.findAllByAvaliacaoId(idAvaliacao);
+
+        // 3. Converte a lista de entidades para um SET de NotaDetalhesDTO.
+        //    Exatamente como é feito dentro do método salvar.
+        return notasDoBanco.stream()
+                .map(nota -> new NotaDetalhesDTO(
+                        nota.getAluno().getIdAluno(),
+                        nota.getIdNota(),
+                        nota.getValor(),
+                        nota.getAluno().getNome()
+                ))
+                .collect(Collectors.toSet()); // Alterado para .toSet()
     }
 }

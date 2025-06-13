@@ -3,6 +3,7 @@ package com.senai.classline.repositories;
 import com.senai.classline.domain.aluno.Aluno;
 import com.senai.classline.domain.avaliacao.Avaliacao;
 import com.senai.classline.domain.nota.Nota;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -13,5 +14,6 @@ public interface NotaRepository extends JpaRepository<Nota, Long> {
 
     List<Nota> findAllByAlunoInAndAvaliacao(List<Aluno> alunos, Avaliacao avaliacao);
 
-    List<Nota> findByAvaliacao (Avaliacao avaliacao);
+    @EntityGraph(attributePaths = {"aluno"})
+    List<Nota> findAllByAvaliacaoId(Long idAvaliacao);
 }
