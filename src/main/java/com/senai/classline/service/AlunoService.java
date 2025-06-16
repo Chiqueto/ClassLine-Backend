@@ -6,6 +6,7 @@ import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.dto.Aluno.AlunoDTO;
 import com.senai.classline.dto.Aluno.AlunoEditarDTO;
 import com.senai.classline.dto.Aluno.AlunoResponseDTO;
+import com.senai.classline.dto.Aluno.BoletimDTO;
 import com.senai.classline.dto.PessoaLoginRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
 import com.senai.classline.dto.professor.ProfessorDTO;
@@ -28,5 +29,6 @@ public interface AlunoService {
     List<AlunoResponseDTO> getByCurso(Long idCurso);
     List<AlunoResponseDTO> getByInstituicao(String idInstituicao);
     List<AlunoResponseDTO> getAlunoByDisciplina(Long idDisciplina);
+    BoletimDTO getBoletimByAluno(String idAluno);
 
 }
