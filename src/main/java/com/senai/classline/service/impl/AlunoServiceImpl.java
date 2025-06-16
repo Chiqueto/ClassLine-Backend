@@ -2,14 +2,18 @@ package com.senai.classline.service.impl;
 
 import com.senai.classline.domain.aluno.Aluno;
 import com.senai.classline.domain.curso.Curso;
+import com.senai.classline.domain.disciplina.Disciplina;
+import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestre;
 import com.senai.classline.domain.instituicao.Instituicao; // Assuming Instituicao can be accessed
 import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.domain.turma.Turma;
+import com.senai.classline.dto.Aluno.AlunoBoletimDTO;
 import com.senai.classline.dto.Aluno.AlunoDTO;
 import com.senai.classline.dto.Aluno.AlunoEditarDTO;
 import com.senai.classline.dto.Aluno.AlunoResponseDTO;
 import com.senai.classline.dto.PessoaLoginRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
+import com.senai.classline.dto.disciplina.DisciplinaBoletimDTO;
 import com.senai.classline.enums.StatusPessoa;
 import com.senai.classline.enums.UserType; // Assuming UserType.ALUNO is defined
 import com.senai.classline.exceptions.global.AlreadyExists;
@@ -33,11 +37,13 @@ import java.util.stream.Collectors;
 public class AlunoServiceImpl implements AlunoService {
     private final DisciplinaRepository disciplinaRepository;
     private final AlunoRepository alunoRepository;
+    private final AvaliacaoRepository avaliacaoRepository;
     private final TurmaRepository turmaRepository;
     private final CursoRepository cursoRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
     private final InstituicaoRepository instituicaoRepository;
+    private final DisciplinaSemestreRepository disciplinaSemestreRepository;
 
     @Override
     public Aluno salvar(AlunoDTO alunoDTO) {
@@ -229,6 +235,33 @@ public class AlunoServiceImpl implements AlunoService {
         return alunos.stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public AlunoBoletimDTO getBoletimByAluno(String idAluno) {
+
+        Set<DisciplinaSemestre> disciplinasSemestre = disciplinaSemestreRepository.findByAluno(idAluno);
+        Set<Disciplina> disciplinasByAluno = disciplinasSemestre.stream()
+                .map(DisciplinaSemestre::getDisciplina) // Method reference para o método getDisciplina
+                .collect(Collectors.toSet());
+
+        Set<DisciplinaBoletimDTO> disciplinas = disciplinasByAluno.stream().map(
+                disciplina -> new DisciplinaBoletimDTO(
+                        disciplina.getIdDisciplina(),
+                        disciplina.getNome(),
+                        avaliacaoRepository.findByAluno()
+
+
+                )
+                ))
+        );
+
+
+        AlunoBoletimDTO boletim = new AlunoBoletimDTO(
+
+        );
+
+        return null;
     }
 
 
