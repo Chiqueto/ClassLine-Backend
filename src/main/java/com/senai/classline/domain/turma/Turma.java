@@ -1,6 +1,7 @@
 package com.senai.classline.domain.turma;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.senai.classline.domain.aluno.Aluno;
 import com.senai.classline.domain.curso.Curso;
 import com.senai.classline.domain.grade.Grade;
 import com.senai.classline.enums.Turno;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "turma")
@@ -36,4 +38,6 @@ public class Turma {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_grade", referencedColumnName = "id_grade")
     private Grade grade;
+    @OneToMany(mappedBy = "idAluno", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Aluno> aluno;
 }

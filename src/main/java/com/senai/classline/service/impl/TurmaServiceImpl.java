@@ -17,9 +17,7 @@ import com.senai.classline.service.TurmaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -56,12 +54,30 @@ public class TurmaServiceImpl implements TurmaService {
         Grade newGrade =  gradeRepository.save(grade);
         turma.setGrade(newGrade);
 
+        Calendar calendario = Calendar.getInstance();
+
+        Date data_inicio_semestre = turma.getDt_inicio();
+        calendario.setTime(turma.getDt_inicio());
+        calendario.set(Calendar.MONTH, Calendar.JUNE);
+        calendario.set(Calendar.DAY_OF_MONTH, calendario.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+        Date data_fim_semestre = calendario.getTime();
+
         for (int nroSemestre = 1; nroSemestre <= newTurma.getCurso().getQtde_semestres(); nroSemestre++) {
             Semestre semestre = new Semestre();
             semestre.setSemestre(nroSemestre);
             semestre.setGrade(newGrade);
+            semestre.setDt_inicio(data_inicio_semestre);
+            semestre.setDt_fim(data_fim_semestre);
             Semestre newSemestre = semestreRepository.save(semestre);
             System.out.println(newSemestre);
+            calendario.setTime(data_fim_semestre);
+            calendario.add(Calendar.DAY_OF_MONTH, 1);
+            data_inicio_semestre =  calendario.getTime();
+            calendario.add(Calendar.MONTH, 5);
+            calendario.set(Calendar.DAY_OF_MONTH, calendario.getActualMaximum(Calendar.DAY_OF_MONTH));
+            data_fim_semestre = calendario.getTime();
+
         }
 
         return newTurma;

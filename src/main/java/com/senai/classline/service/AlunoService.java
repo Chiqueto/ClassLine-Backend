@@ -2,6 +2,7 @@ package com.senai.classline.service;
 
 import com.senai.classline.domain.aluno.Aluno;
 import com.senai.classline.domain.professor.Professor;
+import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.dto.Aluno.AlunoDTO;
 import com.senai.classline.dto.Aluno.AlunoEditarDTO;
 import com.senai.classline.dto.Aluno.AlunoResponseDTO;

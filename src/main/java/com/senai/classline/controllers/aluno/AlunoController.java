@@ -1,6 +1,7 @@
 package com.senai.classline.controllers.aluno; // Pacote ajustado para aluno
 
 import com.senai.classline.domain.aluno.Aluno;
+import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.dto.Aluno.AlunoDTO;
 import com.senai.classline.dto.Aluno.AlunoEditarDTO;
 // Se você tiver um AlunoResponseDTO específico para o getById, pode usá-lo.
@@ -14,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/aluno")
@@ -80,4 +82,6 @@ public class AlunoController {
         List<AlunoResponseDTO> alunos = alunoService.getAlunoByDisciplina(id_disciplina);
         return ResponseEntity.status(HttpStatus.OK).body(alunos);
     }
+
+
 }

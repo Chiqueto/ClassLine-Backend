@@ -1,5 +1,7 @@
 package com.senai.classline.controllers.disciplinasemestre;
 
+import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestre;
+import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.dto.disciplinaSemestre.DisciplinaSemestreResponseDTO;
 import com.senai.classline.service.DisciplinaSemestreService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/disciplinasemestre")
@@ -51,6 +54,13 @@ public class DisciplinaSemestreController {
     public ResponseEntity<List<DisciplinaSemestreResponseDTO>> buscarPorTurma(@PathVariable Long idTurma) {
         List<DisciplinaSemestreResponseDTO> gradeDaTurma = service.getGradeByTurma(idTurma);
         return ResponseEntity.ok(gradeDaTurma);
+    }
+
+    @PreAuthorize("hasRole('ALUNO')")
+    @GetMapping("/aluno/{id_aluno}")
+    public ResponseEntity<Set<DisciplinaSemestreResponseDTO>> getDisciplinasSemestreByAluno(@PathVariable String id_aluno) {
+        Set<DisciplinaSemestreResponseDTO> response = service.getDisciplinasSemestreByAluno(id_aluno);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

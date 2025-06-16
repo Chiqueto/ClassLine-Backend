@@ -1,5 +1,6 @@
 package com.senai.classline.service.impl;
 
+import com.senai.classline.domain.aluno.Aluno;
 import com.senai.classline.domain.disciplina.Disciplina;
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestre;
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestreId;
@@ -14,7 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +29,7 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
     private final SemestreRepository semestreRepository;
     private final ProfessorRepository professorRepository;
     private final TurmaRepository turmaRepository;
+    private final AlunoRepository alunoRepository;
 
 
 
@@ -44,12 +48,22 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
         Professor professor = professorRepository.findById(id_professor)
                 .orElseThrow(() -> new RuntimeException("Professor não encontrado."));
 
+        Date data_atual = new Date();
+
+        StatusSemestre statusSemestre;
+
+        if (data_atual.after(semestre.getDt_inicio()) && data_atual.before(semestre.getDt_fim())) {
+            statusSemestre = StatusSemestre.EM_ANDAMENTO;
+        } else {
+            statusSemestre = StatusSemestre.NAO_INICIADO;
+        }
+
         DisciplinaSemestre novaEntrada = new DisciplinaSemestre(
                 id,
                 disciplina,
                 semestre,
                 professor,
-                StatusSemestre.EM_ANDAMENTO
+                statusSemestre
         );
 
         return disciplinaSemestreRepository.save(novaEntrada);
@@ -94,5 +108,19 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
                     .map(DisciplinaSemestreResponseDTO::new) // Usa o construtor do DTO
                     .collect(Collectors.toList());
         }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<DisciplinaSemestreResponseDTO> getDisciplinasSemestreByAluno(String id_aluno) {
+        Aluno aluno = this.alunoRepository.findById(id_aluno)
+                .orElseThrow(() -> new NotFoundException("Aluno não encontrado com ID: " + id_aluno));
+
+        Set<DisciplinaSemestre> disciplinasDoAluno = disciplinaSemestreRepository.findByAluno(aluno.getIdAluno());
+
+        return disciplinasDoAluno.stream()
+                .map(DisciplinaSemestreResponseDTO::new) // Usa o construtor do DTO
+                .collect(Collectors.toSet());
+
+    }
 
 }

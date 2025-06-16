@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -28,4 +29,6 @@ public class Semestre {
     private int semestre;
     @OneToMany(mappedBy = "semestre", fetch = FetchType.LAZY)
     private List<DisciplinaSemestre> disciplinasSemestre;
+    private Date dt_inicio;
+    private Date dt_fim;
 }

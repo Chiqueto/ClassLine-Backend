@@ -1,6 +1,7 @@
 package com.senai.classline.infra.security;
 
 import com.senai.classline.enums.UserType;
+import com.senai.classline.repositories.AlunoRepository;
 import com.senai.classline.repositories.InstituicaoRepository;
 import com.senai.classline.repositories.ProfessorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class UserDetailsServiceFactory {
     @Autowired
     private ProfessorRepository professorRepository;
 
+    @Autowired
+    private AlunoRepository alunoRepository;
+
     public UserDetails loadUserByLogin(String login, UserType type) {
         switch (type) {
             case INSTITUICAO:
@@ -34,6 +38,12 @@ public class UserDetailsServiceFactory {
                 return new org.springframework.security.core.userdetails.User(
                         prof.getCpf(), prof.getSenha(),
                         Collections.singletonList(new SimpleGrantedAuthority("ROLE_PROFESSOR")));
+            case ALUNO:
+                var aluno = alunoRepository.findByCpf(login)
+                        .orElseThrow(() -> new UsernameNotFoundException("Aluno não encontrado"));
+                return new org.springframework.security.core.userdetails.User(
+                        aluno.getCpf(), aluno.getSenha(),
+                        Collections.singletonList(new SimpleGrantedAuthority("ROLE_ALUNO")));
             default:
                 throw new IllegalArgumentException("Tipo inválido");
         }

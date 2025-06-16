@@ -3,6 +3,7 @@ package com.senai.classline.service.impl;
 import com.senai.classline.domain.aluno.Aluno;
 import com.senai.classline.domain.curso.Curso;
 import com.senai.classline.domain.instituicao.Instituicao; // Assuming Instituicao can be accessed
+import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.dto.Aluno.AlunoDTO;
 import com.senai.classline.dto.Aluno.AlunoEditarDTO;
@@ -229,6 +230,7 @@ public class AlunoServiceImpl implements AlunoService {
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
+
 
     private AlunoResponseDTO convertToResponseDTO(Aluno aluno) {
         // Lógica para obter o ID da Instituição de forma segura

@@ -33,7 +33,7 @@ public class DisciplinaController {
         return ResponseEntity.status(HttpStatus.OK).body(disciplinas);
     }
 
-    @PreAuthorize("hasRole('INSTITUICAO')")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('ALUNO')")
     @GetMapping("/{id_disciplina}")
     public ResponseEntity<DisciplinaResponseDTO> getDisciplinaById(@PathVariable Long id_disciplina){
         final DisciplinaResponseDTO disciplina = this.service.getDisciplinaById(id_disciplina);
