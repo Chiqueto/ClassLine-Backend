@@ -51,6 +51,7 @@ public class FrequenciaServiceImpl implements FrequenciaService {
             novaFrequencia.setAluno(aluno);
             novaFrequencia.setAula(aula);
             novaFrequencia.setPresente(freqDTO.presente());
+            novaFrequencia.setProfessor(professor);
 
             frequenciaParaSalvar.add(novaFrequencia);
         }
