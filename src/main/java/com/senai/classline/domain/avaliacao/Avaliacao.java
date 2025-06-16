@@ -47,6 +47,6 @@ public class Avaliacao {
     private LocalDate data;
     @NotNull
     private Boolean concluida;
-    @OneToMany(mappedBy = "idNota", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "avaliacao", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Nota> nota;
 }

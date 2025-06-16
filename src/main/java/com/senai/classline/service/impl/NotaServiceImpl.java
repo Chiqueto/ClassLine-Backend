@@ -118,7 +118,7 @@ public class NotaServiceImpl implements NotaService {
         }
 
         // 2. Busca as notas usando o novo método OTIMIZADO do repositório.
-        List<Nota> notasDoBanco = repository.findAllByAvaliacaoId(idAvaliacao);
+        List<Nota> notasDoBanco = repository.findAllByAvaliacaoIdAvaliacao(idAvaliacao);
 
         // 3. Converte a lista de entidades para um SET de NotaDetalhesDTO.
         //    Exatamente como é feito dentro do método salvar.
