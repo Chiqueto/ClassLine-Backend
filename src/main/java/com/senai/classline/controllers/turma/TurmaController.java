@@ -43,7 +43,7 @@ public class TurmaController {
         return ResponseEntity.status(HttpStatus.OK).body("Turma inativada com sucesso!");
     }
 
-    @PreAuthorize("hasRole('INSTITUICAO')")
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
     @GetMapping("/{id_turma}")
     public ResponseEntity getTurmaById(@PathVariable Long id_turma){
         TurmaResponseDTO turma = this.service.getTurmaById(id_turma);
