@@ -38,6 +38,6 @@ public class Turma {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_grade", referencedColumnName = "id_grade")
     private Grade grade;
-    @OneToMany(mappedBy = "idAluno", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "turma", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Aluno> aluno;
 }

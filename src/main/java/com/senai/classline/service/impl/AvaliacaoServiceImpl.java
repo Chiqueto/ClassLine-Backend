@@ -1,5 +1,6 @@
 package com.senai.classline.service.impl;
 
+import com.senai.classline.domain.aluno.Aluno;
 import com.senai.classline.domain.avaliacao.Avaliacao;
 import com.senai.classline.domain.disciplina.Disciplina;
 import com.senai.classline.domain.professor.Professor;
@@ -7,15 +8,13 @@ import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.dto.avaliacao.AvaliacaoDTO;
 import com.senai.classline.dto.avaliacao.AvaliacaoResponseDTO;
 import com.senai.classline.exceptions.global.NotFoundException;
-import com.senai.classline.repositories.AvaliacaoRepository;
-import com.senai.classline.repositories.DisciplinaRepository;
-import com.senai.classline.repositories.ProfessorRepository;
-import com.senai.classline.repositories.TurmaRepository;
+import com.senai.classline.repositories.*;
 import com.senai.classline.service.AvaliacaoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +24,7 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
     final DisciplinaRepository disciplinaRepository;
     final ProfessorRepository professorRepository;
     final TurmaRepository turmaRepository;
+    final AlunoRepository alunoRepository;
 
     @Override
     public AvaliacaoResponseDTO criar(AvaliacaoDTO body, Long idDisciplina, String idProfessor, Long idTurma) {
@@ -58,10 +58,22 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
                 idDisciplina
         );
 
-        // Converte a lista de entidades para DTOs antes de retornar
+
         return avaliacoes.stream()
-                .map(this::convertToResponseDTO) // Usando o método que criamos antes
+                .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Set<AvaliacaoResponseDTO> getByAluno(String idAluno) {
+        Aluno aluno = this.alunoRepository.findById(idAluno)
+                .orElseThrow(() -> new NotFoundException("Aluno não encontrada com ID: " + idAluno));
+
+        Set<Avaliacao> avaliacoes = repository.findByAluno(idAluno);
+
+        return avaliacoes.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toSet());
     }
 
     private AvaliacaoResponseDTO convertToResponseDTO(Avaliacao avaliacao) {

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
 
@@ -24,4 +25,10 @@ public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long> {
             @Param("idProfessor") String idProfessor,
             @Param("idDisciplina") Long idDisciplina
     );
+
+    @Query("SELECT a FROM Avaliacao a " +
+            "JOIN a.turma t " +
+            "JOIN t.aluno al " +
+            "WHERE al.idAluno like :idAluno")
+    Set<Avaliacao> findByAluno(@Param("idAluno") String idAluno);
 }

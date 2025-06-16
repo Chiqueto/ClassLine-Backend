@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/avaliacao")
@@ -43,4 +44,15 @@ public class AvaliacaoController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @PreAuthorize("hasRole('ALUNO')")
+    @GetMapping("/aluno/{idAluno}")
+    public ResponseEntity <Set<AvaliacaoResponseDTO>> buscarAvaliacoesByAluno(
+            @PathVariable String idAluno){
+        Set<AvaliacaoResponseDTO> response = this.service.getByAluno( idAluno);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
 }
