@@ -46,6 +46,7 @@ public class DisciplinaSemestreController {
         return ResponseEntity.ok("Disciplina inativada com sucesso!");
     }
 
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
     @GetMapping("/turma/{idTurma}")
     public ResponseEntity<List<DisciplinaSemestreResponseDTO>> buscarPorTurma(@PathVariable Long idTurma) {
         List<DisciplinaSemestreResponseDTO> gradeDaTurma = service.getGradeByTurma(idTurma);
