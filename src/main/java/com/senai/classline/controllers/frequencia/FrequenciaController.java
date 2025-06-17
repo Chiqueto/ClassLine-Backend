@@ -56,4 +56,21 @@ public class FrequenciaController {
         );
         return ResponseEntity.ok(listaFrequencia);
     }
+
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
+    @PutMapping("/disciplina/{idDisciplina}/professor/{idProfessor}/data/{data}")
+    public ResponseEntity<List<FrequenciaResponseDTO>> putFrequencia(
+            @PathVariable Long idDisciplina,
+            @PathVariable String idProfessor,
+            @RequestBody @Valid LancarFrequenciaRequest body
+    ) {
+        List<FrequenciaResponseDTO> response = service.editarFrequencia(
+                body.presencas(),
+                idDisciplina,
+                idProfessor,
+                body.aula()
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }

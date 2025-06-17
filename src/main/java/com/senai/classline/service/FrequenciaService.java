@@ -12,4 +12,6 @@ public interface FrequenciaService {
     List<FrequenciaResponseDTO> lancarFrequencia (List<FrequenciaDTO> body, Long idDisciplina, String idProfessor, AulaDTO aulaBody);
 
     List<AlunoFrequenciaDTO> getFrequenciaPorDiaDeAula(Long idDisciplina, String idProfessor, LocalDate data);
+
+    List<FrequenciaResponseDTO> editarFrequencia(List<FrequenciaDTO> body, Long idDisciplina, String idProfessor, AulaDTO aulaBody);
 }
