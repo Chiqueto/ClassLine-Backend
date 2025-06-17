@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Date;
 import java.util.Set;
@@ -20,6 +21,7 @@ import java.util.Set;
 @Table(name = "aluno")
 @Getter
 @Setter
+@SQLRestriction("status = 'ATIVO'")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Aluno extends Pessoa {

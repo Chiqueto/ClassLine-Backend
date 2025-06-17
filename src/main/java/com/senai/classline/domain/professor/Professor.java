@@ -6,6 +6,8 @@ import com.senai.classline.domain.pessoa.Pessoa;
 import com.senai.classline.enums.Formacao;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
+
 import java.util.UUID;
 
 import java.util.Date;
@@ -14,6 +16,7 @@ import java.util.Date;
 @Table(name = "professor")
 @Getter
 @Setter
+@SQLRestriction("status = 'ATIVO'")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Professor extends Pessoa {

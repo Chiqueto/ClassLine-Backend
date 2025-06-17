@@ -3,10 +3,14 @@ package com.senai.classline.repositories;
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestre;
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestreId;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -26,4 +30,22 @@ public interface DisciplinaSemestreRepository extends JpaRepository<DisciplinaSe
             "WHERE a.id = :idAluno " +
             "AND ds.status = 'EM_ANDAMENTO'")
     Set<DisciplinaSemestre> findByAluno(@Param("idAluno") String idAluno);
+
+    // Método para INICIAR os semestres que estão NAO_INICIADO
+    @Modifying
+    @Transactional
+    @Query("UPDATE DisciplinaSemestre ds SET ds.status = com.senai.classline.enums.StatusSemestre.EM_ANDAMENTO " +
+            "WHERE ds.semestre.dt_inicio <= :hoje " +
+            "AND ds.semestre.dt_fim >= :hoje " +
+            "AND ds.status = com.senai.classline.enums.StatusSemestre.NAO_INICIADO")
+    int atualizarStatusParaEmAndamento(@Param("hoje") Date hoje);
+
+    // Método para CONCLUIR os semestres que estão em andamento
+    @Modifying
+    @Transactional
+    @Query("UPDATE DisciplinaSemestre ds SET ds.status = com.senai.classline.enums.StatusSemestre.CONCLUIDO " +
+            "WHERE ds.semestre.dt_fim < :hoje " +
+            "AND ds.status = com.senai.classline.enums.StatusSemestre.EM_ANDAMENTO")
+    int atualizarStatusParaConcluido(@Param("hoje") Date hoje);
+
 }

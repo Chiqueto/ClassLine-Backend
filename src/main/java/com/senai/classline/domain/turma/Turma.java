@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Date;
 import java.util.Set;
@@ -18,6 +19,7 @@ import java.util.Set;
 @Table(name = "turma")
 @Getter
 @Setter
+@SQLRestriction("ativo = true")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Turma {
