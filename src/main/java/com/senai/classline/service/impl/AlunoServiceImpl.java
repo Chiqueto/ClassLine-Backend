@@ -97,24 +97,65 @@ public class AlunoServiceImpl implements AlunoService {
     }
 
     @Override
-    // MODIFICADO: Retorna AlunoResponseDTO
+    @Transactional // <-- ESSENCIAL para garantir que as alterações sejam salvas no banco!
     public AlunoResponseDTO editar(AlunoEditarDTO body, String id_aluno) {
+        // 1. Busca o aluno existente. Se não encontrar, lança exceção.
         Aluno aluno = this.alunoRepository.findById(id_aluno)
                 .orElseThrow(() -> new NotFoundException("Aluno não encontrado com ID: " + id_aluno));
 
-        // ... (lógica de autorização e validação permanece a mesma) ...
+        // --- ATUALIZAÇÃO DOS CAMPOS ---
+        // Verifica cada campo do DTO. Se não for nulo, atualiza o objeto 'aluno'.
 
+        // --- Dados Pessoais ---
+        if (body.nome() != null && !body.nome().isBlank()) {
+            aluno.setNome(body.nome());
+        }
         if (body.email() != null && !body.email().equals(aluno.getEmail())) {
+            // Verifica se o novo e-mail já está em uso por outro aluno
             alunoRepository.findByEmail(body.email()).ifPresent(a -> {
-                throw new AlreadyExists("E-mail já cadastrado!");
+                if (!a.getIdAluno().equals(aluno.getIdAluno())) {
+                    throw new AlreadyExists("E-mail já cadastrado!");
+                }
             });
             aluno.setEmail(body.email());
         }
+        if (body.senha() != null && !body.senha().isBlank()) {
+            aluno.setSenha(passwordEncoder.encode(body.senha()));
+        }
+        if (body.cpf() != null) {
+            aluno.setCpf(body.cpf());
+        }
+        if (body.dt_nascimento() != null) {
+            aluno.setDt_nascimento(body.dt_nascimento());
+        }
+        if (body.genero() != null) {
+            aluno.setGenero(body.genero());
+        }
+        if (body.telefone() != null) {
+            aluno.setTelefone(body.telefone());
+        }
 
-        if (body.nome() != null) aluno.setNome(body.nome());
-        if (body.senha() != null && !body.senha().isEmpty()) aluno.setSenha(passwordEncoder.encode(body.senha()));
-        if (body.dt_nascimento() != null) aluno.setDt_nascimento(body.dt_nascimento());
-        // ... (outras atribuições permanecem as mesmas) ...
+        // --- Endereço ---
+        if (body.logradouro() != null) aluno.setLogradouro(body.logradouro());
+        if (body.bairro() != null) aluno.setBairro(body.bairro());
+        if (body.numero() != null) aluno.setNumero(body.numero());
+        if (body.cidade() != null) aluno.setCidade(body.cidade());
+
+        // --- Dados Acadêmicos ---
+        if (body.turno() != null) {
+            aluno.setTurno(body.turno());
+        }
+        if (body.status() != null) {
+            aluno.setStatus(body.status());
+        }
+        if (body.dt_inicio() != null) {
+            aluno.setDt_inicio(body.dt_inicio());
+        }
+        if (body.dt_fim() != null) {
+            aluno.setDt_fim(body.dt_fim());
+        }
+
+        // --- Associações com outras entidades ---
         if (body.id_turma() != null) {
             Turma turma = turmaRepository.findById(body.id_turma())
                     .orElseThrow(() -> new NotFoundException("Turma não encontrada com ID: " + body.id_turma()));
@@ -126,8 +167,12 @@ public class AlunoServiceImpl implements AlunoService {
             aluno.setCurso(curso);
         }
 
+        // 2. Salva a entidade 'aluno' com todas as alterações.
+        //    Com @Transactional, esta chamada é tecnicamente opcional, mas não prejudica.
         Aluno alunoEditado = this.alunoRepository.save(aluno);
-        return convertToResponseDTO(alunoEditado); // MODIFICADO: Converte para DTO antes de retornar
+
+        // 3. Converte a entidade atualizada para um DTO de resposta.
+        return convertToResponseDTO(alunoEditado);
     }
 
     @Override

@@ -60,11 +60,11 @@ public class AlunoController {
 
     @PreAuthorize("hasRole('INSTITUICAO') or (hasRole('ALUNO') and #id_aluno == principal.id)")
     @PutMapping("/{id_aluno}")
-    public ResponseEntity<String> updateAluno(
+    public ResponseEntity<AlunoResponseDTO> updateAluno(
             @PathVariable String id_aluno,
             @RequestBody @Valid AlunoEditarDTO alunoEditarDTO) {
         AlunoResponseDTO alunoEditado = this.alunoService.editar(alunoEditarDTO, id_aluno);
-        return ResponseEntity.status(HttpStatus.OK).body("Aluno '" + alunoEditado.nome() + "' editado com sucesso!");
+        return ResponseEntity.status(HttpStatus.OK).body(alunoEditado);
     }
 
     @PreAuthorize("hasRole('INSTITUICAO')")
