@@ -2,6 +2,7 @@ package com.senai.classline.controllers.aluno; // Pacote ajustado para aluno
 
 import com.senai.classline.domain.aluno.Aluno;
 import com.senai.classline.domain.semestre.Semestre;
+import com.senai.classline.dto.Aluno.AlunoBoletimDTO;
 import com.senai.classline.dto.Aluno.AlunoDTO;
 import com.senai.classline.dto.Aluno.AlunoEditarDTO;
 // Se você tiver um AlunoResponseDTO específico para o getById, pode usá-lo.
@@ -82,6 +83,15 @@ public class AlunoController {
         List<AlunoResponseDTO> alunos = alunoService.getAlunoByDisciplina(id_disciplina);
         return ResponseEntity.status(HttpStatus.OK).body(alunos);
     }
+
+    @PreAuthorize("hasRole('ALUNO')")
+    @GetMapping("/boletim/{id_aluno}")
+    public ResponseEntity<AlunoBoletimDTO> getBoletim(@PathVariable String id_aluno) {
+        AlunoBoletimDTO boletim = alunoService.getBoletimByAluno(id_aluno);
+        return ResponseEntity.status(HttpStatus.OK).body(boletim);
+    }
+
+
 
 
 }

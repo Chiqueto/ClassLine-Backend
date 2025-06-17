@@ -12,4 +12,6 @@ public interface FrequenciaRepository extends JpaRepository<Frequencia, Long> {
 
     @Query("SELECT f FROM Frequencia f JOIN FETCH f.aluno WHERE f.aula.id = :idAula")
     List<Frequencia> findByAulaIdComAlunos(@Param("idAula") Long idAula);
+
+    List<Frequencia> findByAluno_IdAluno(@Param("idAluno") String idAluno);
 }

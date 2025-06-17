@@ -16,4 +16,6 @@ public interface NotaRepository extends JpaRepository<Nota, Long> {
 
     @EntityGraph(attributePaths = {"aluno"})
     List<Nota> findAllByAvaliacaoIdAvaliacao(Long idAvaliacao);
+
+    List<Nota> findByAluno_IdAluno(String idAvaliacao);
 }

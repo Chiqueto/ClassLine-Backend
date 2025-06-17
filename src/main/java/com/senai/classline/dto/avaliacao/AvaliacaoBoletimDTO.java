@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 public record AvaliacaoBoletimDTO(
         Long idAvaliacao,
-        String nomeDisciplina,
         TipoProva tipo,
         Float peso,
         LocalDate data,

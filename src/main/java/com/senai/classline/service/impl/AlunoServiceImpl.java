@@ -1,18 +1,24 @@
 package com.senai.classline.service.impl;
 
 import com.senai.classline.domain.aluno.Aluno;
+import com.senai.classline.domain.avaliacao.Avaliacao;
 import com.senai.classline.domain.curso.Curso;
 import com.senai.classline.domain.disciplina.Disciplina;
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestre;
+import com.senai.classline.domain.frequencia.Frequencia;
 import com.senai.classline.domain.instituicao.Instituicao; // Assuming Instituicao can be accessed
+import com.senai.classline.domain.nota.Nota;
+import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.domain.turma.Turma;
 import com.senai.classline.dto.Aluno.AlunoBoletimDTO;
 import com.senai.classline.dto.Aluno.AlunoDTO;
 import com.senai.classline.dto.Aluno.AlunoEditarDTO;
 import com.senai.classline.dto.Aluno.AlunoResponseDTO;
+import com.senai.classline.dto.Nota.NotaBoletimDTO;
 import com.senai.classline.dto.PessoaLoginRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
+import com.senai.classline.dto.avaliacao.AvaliacaoBoletimDTO;
 import com.senai.classline.dto.disciplina.DisciplinaBoletimDTO;
 import com.senai.classline.enums.StatusPessoa;
 import com.senai.classline.enums.UserType; // Assuming UserType.ALUNO is defined
@@ -26,10 +32,12 @@ import com.senai.classline.service.AlunoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder; // To be injected
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +52,8 @@ public class AlunoServiceImpl implements AlunoService {
     private final TokenService tokenService;
     private final InstituicaoRepository instituicaoRepository;
     private final DisciplinaSemestreRepository disciplinaSemestreRepository;
+    private final NotaRepository notaRepository;
+    private final FrequenciaRepository frequenciaRepository;
 
     @Override
     public Aluno salvar(AlunoDTO alunoDTO) {
@@ -238,30 +248,107 @@ public class AlunoServiceImpl implements AlunoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AlunoBoletimDTO getBoletimByAluno(String idAluno) {
 
-        Set<DisciplinaSemestre> disciplinasSemestre = disciplinaSemestreRepository.findByAluno(idAluno);
-        Set<Disciplina> disciplinasByAluno = disciplinasSemestre.stream()
-                .map(DisciplinaSemestre::getDisciplina) // Method reference para o método getDisciplina
+        // --- PASSO 1: BUSCAR TODOS OS DADOS DO BANCO (EM POUCAS E EFICIENTES CONSULTAS) ---
+
+        // 1.1. Valida e busca a entidade principal, o Aluno.
+        Aluno aluno = this.alunoRepository.findById(idAluno)
+                .orElseThrow(() -> new NotFoundException("Aluno não encontrado com ID: " + idAluno));
+
+        // 1.2. Busca todas as disciplinas do aluno de uma vez.
+        Set<Disciplina> disciplinasDoAluno = disciplinaSemestreRepository.findByAluno(idAluno)
+                .stream()
+                .map(DisciplinaSemestre::getDisciplina)
                 .collect(Collectors.toSet());
 
-        Set<DisciplinaBoletimDTO> disciplinas = disciplinasByAluno.stream().map(
-                disciplina -> new DisciplinaBoletimDTO(
-                        disciplina.getIdDisciplina(),
-                        disciplina.getNome(),
-                        avaliacaoRepository.findByAluno()
+        // 1.3. Busca todas as avaliações e notas do aluno de uma vez.
+        Set<Avaliacao> avaliacoesDoAluno = avaliacaoRepository.findByAluno(idAluno);
+        List<Nota> notasDoAluno = notaRepository.findByAluno_IdAluno(idAluno);
+
+        List<Frequencia> todasAsFrequenciasDoAluno = frequenciaRepository.findByAluno_IdAluno(idAluno);
 
 
-                )
-                ))
+        // --- PASSO 2: ORGANIZAR OS DADOS EM MEMÓRIA PARA ACESSO RÁPIDO (A MÁGICA ACONTECE AQUI) ---
+
+        // 2.1. Cria um mapa de notas, onde a chave é o ID da avaliação.
+        Map<Long, Nota> mapaDeNotasPorAvaliacaoId = notasDoAluno.stream()
+                .collect(Collectors.toMap(
+                        nota -> nota.getAvaliacao().getIdAvaliacao(),
+                        Function.identity()
+                ));
+
+        // 2.2. Converte a lista de entidades Avaliacao para uma lista de AvaliacaoBoletimDTO.
+        //     Cada DTO já é criado com sua nota correspondente, pega do mapa.
+        List<AvaliacaoBoletimDTO> todosOsAvaliacaoDTOs = avaliacoesDoAluno.stream()
+                .map(avaliacao -> {
+                    Nota notaCorrespondente = mapaDeNotasPorAvaliacaoId.get(avaliacao.getIdAvaliacao());
+                    NotaBoletimDTO notaDTO = (notaCorrespondente != null) ? new NotaBoletimDTO(notaCorrespondente) : null;
+                    return new AvaliacaoBoletimDTO(
+                            avaliacao.getIdAvaliacao(),
+                            avaliacao.getTipo(),
+                            avaliacao.getPeso(),
+                            avaliacao.getData(),
+                            avaliacao.getConcluida(),
+                            notaDTO
+                    );
+                })
+                .toList();
+
+        // 2.3. Agrupa os DTOs de avaliação pelo ID da disciplina a que pertencem.
+        //     Isso cria um mapa onde cada disciplina tem sua própria lista de avaliações.
+        //     (Pré-requisito: a entidade Avaliacao deve ter um campo `private Disciplina disciplina;`)
+        Map<Long, Set<AvaliacaoBoletimDTO>> mapaDeAvaliacoesPorDisciplina = todosOsAvaliacaoDTOs.stream()
+                .collect(Collectors.groupingBy(
+                        // Para agrupar, precisamos saber a qual disciplina cada avaliação pertence.
+                        // Assumindo que Avaliacao tem getDisciplina()
+                        avaliacaoDTO -> avaliacoesDoAluno.stream()
+                                .filter(a -> a.getIdAvaliacao().equals(avaliacaoDTO.idAvaliacao()))
+                                .findFirst().get().getDisciplina().getIdDisciplina(),
+                        Collectors.toSet()
+                ));
+
+        Map<Long, Float> mapaDeFrequenciaPorDisciplina = todasAsFrequenciasDoAluno.stream()
+                .collect(Collectors.groupingBy(
+                        // Agrupa os registros de frequência pelo ID da disciplina
+                        f -> f.getAula().getDisciplina().getIdDisciplina(),
+                        // Para cada grupo, calcula a porcentagem de frequência
+                        Collectors.collectingAndThen(
+                                Collectors.toList(),
+                                listaDeFrequencias -> {
+                                    long totalAulas = listaDeFrequencias.size();
+                                    if (totalAulas == 0) return 100.0f; // Se não houve aula, 100% de frequência
+                                    long presencas = listaDeFrequencias.stream().filter(Frequencia::getPresente).count();
+                                    return ((float) presencas / totalAulas) * 100.0f;
+                                }
+                        )
+                ));
+
+        // --- PASSO 3: MONTAR A LISTA DE DISCIPLINAS COM SUAS AVALIAÇÕES ---
+
+        // 3.1. Itera sobre as disciplinas do aluno e monta o DTO de cada uma.
+        Set<DisciplinaBoletimDTO> disciplinasBoletimDTOs = disciplinasDoAluno.stream()
+                .map(disciplina -> {
+                    // Pega a frequência calculada do mapa. Se não houver registro, assume 100%.
+                    float frequencia = mapaDeFrequenciaPorDisciplina.getOrDefault(disciplina.getIdDisciplina(), 100.0f);
+
+                    return new DisciplinaBoletimDTO(
+                            disciplina.getIdDisciplina(),
+                            disciplina.getNome(),
+                            mapaDeAvaliacoesPorDisciplina.getOrDefault(disciplina.getIdDisciplina(), Set.of()),
+                            frequencia // <-- Passando a frequência calculada
+                    );
+                })
+                .collect(Collectors.toSet());
+
+
+        // --- PASSO 4: MONTAR E RETORNAR O BOLETIM FINAL ---
+
+        // 4.1. Com todas as partes prontas, cria o DTO final do boletim.
+        return new AlunoBoletimDTO(
+                disciplinasBoletimDTOs
         );
-
-
-        AlunoBoletimDTO boletim = new AlunoBoletimDTO(
-
-        );
-
-        return null;
     }
 
 
