@@ -18,7 +18,7 @@ import java.util.List;
 @Table(name = "disciplina")
 @Getter
 @Setter
-@SQLRestriction("ativo = true")
+@SQLRestriction("status = true")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Disciplina {
