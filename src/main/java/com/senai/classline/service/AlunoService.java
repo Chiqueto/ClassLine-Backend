@@ -6,6 +6,7 @@ import com.senai.classline.dto.PessoaLoginRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AlunoService {
     Aluno salvar (AlunoDTO alunoDTO);
@@ -23,5 +24,5 @@ public interface AlunoService {
     List<AlunoResponseDTO> getByInstituicao(String idInstituicao);
     List<AlunoDisciplinaDTO> getAlunoByDisciplina(Long idDisciplina);
     AlunoBoletimDTO getBoletimByAluno(String idAluno);
-
+    Set<ComparativoMediaDisciplinaDTO> getComparativoMediasPorDisciplina(String idAluno);
 }

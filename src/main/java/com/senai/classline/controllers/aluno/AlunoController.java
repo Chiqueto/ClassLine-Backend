@@ -88,7 +88,12 @@ public class AlunoController {
         return ResponseEntity.status(HttpStatus.OK).body(boletim);
     }
 
-
+    @PreAuthorize("hasRole('ALUNO')")
+    @GetMapping("/{idAluno}/comparativo-geral")
+    public ResponseEntity<Set<ComparativoMediaDisciplinaDTO>> getComparativoGeral(@PathVariable String idAluno) {
+        Set<ComparativoMediaDisciplinaDTO> comparativo = alunoService.getComparativoMediasPorDisciplina(idAluno);
+        return ResponseEntity.ok(comparativo);
+    }
 
 
 }

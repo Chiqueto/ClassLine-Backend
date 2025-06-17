@@ -432,4 +432,75 @@ public class AlunoServiceImpl implements AlunoService {
         );
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Set<ComparativoMediaDisciplinaDTO> getComparativoMediasPorDisciplina(String idAluno) {
+
+        // --- PASSO 1: BUSCAR TODOS OS DADOS EM LOTE ---
+
+        // 1.1. Valida e busca o aluno para obter sua turma.
+        Aluno aluno = alunoRepository.findById(idAluno)
+                .orElseThrow(() -> new NotFoundException("Aluno não encontrado com ID: " + idAluno));
+        Turma turma = aluno.getTurma();
+
+        // 1.2. Busca todas as disciplinas relacionadas ao aluno.
+        Set<Disciplina> disciplinasDoAluno = disciplinaSemestreRepository.findByAluno(idAluno)
+                .stream().map(DisciplinaSemestre::getDisciplina).collect(Collectors.toSet());
+
+        // 1.3. Busca TODAS as notas da TURMA INTEIRA de uma vez.
+        List<Nota> notasDaTurmaInteira = notaRepository.findByAvaliacao_Turma_IdTurma(turma.getIdTurma());
+
+
+        // --- PASSO 2: ORGANIZAR NOTAS EM MAPAS PARA CÁLCULOS RÁPIDOS ---
+
+        // 2.1. Agrupa todas as notas da turma por disciplina.
+        Map<Disciplina, List<Nota>> mapaNotasTurmaPorDisciplina = notasDaTurmaInteira.stream()
+                .collect(Collectors.groupingBy(nota -> nota.getAvaliacao().getDisciplina()));
+
+        // 2.2. Filtra e agrupa apenas as notas do aluno específico.
+        Map<Disciplina, List<Nota>> mapaNotasAlunoPorDisciplina = notasDaTurmaInteira.stream()
+                .filter(nota -> nota.getAluno().getIdAluno().equals(idAluno))
+                .collect(Collectors.groupingBy(nota -> nota.getAvaliacao().getDisciplina()));
+
+
+        // --- PASSO 3: ITERAR SOBRE AS DISCIPLINAS E CALCULAR AS MÉDIAS ---
+
+        return disciplinasDoAluno.stream().map(disciplina -> {
+
+            // Pega as listas de notas já filtradas dos mapas.
+            List<Nota> notasDaDisciplinaParaAluno = mapaNotasAlunoPorDisciplina.getOrDefault(disciplina, List.of());
+            List<Nota> notasDaDisciplinaParaTurma = mapaNotasTurmaPorDisciplina.getOrDefault(disciplina, List.of());
+
+            // Calcula as médias usando um método auxiliar para não repetir código.
+            float mediaAluno = calcularMediaPonderada(notasDaDisciplinaParaAluno);
+            float mediaTurma = calcularMediaPonderada(notasDaDisciplinaParaTurma);
+
+            return new ComparativoMediaDisciplinaDTO(
+                    disciplina.getNome(),
+                    mediaAluno,
+                    mediaTurma
+            );
+        }).collect(Collectors.toSet());
+    }
+
+    /**
+     * Método auxiliar privado para calcular a média ponderada de uma lista de notas.
+     * Evita duplicação de código.
+     */
+    private float calcularMediaPonderada(List<Nota> notas) {
+        if (notas == null || notas.isEmpty()) {
+            return 0.0f;
+        }
+
+        double somaPonderada = notas.stream()
+                .mapToDouble(n -> n.getValor() * n.getAvaliacao().getPeso())
+                .sum();
+
+        double somaPesos = notas.stream()
+                .mapToDouble(n -> n.getAvaliacao().getPeso())
+                .sum();
+
+        return (somaPesos == 0) ? 0.0f : (float) (somaPonderada / somaPesos);
+    }
+
 }
