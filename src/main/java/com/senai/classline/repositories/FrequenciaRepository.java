@@ -1,6 +1,7 @@
 package com.senai.classline.repositories;
 
 
+import com.senai.classline.domain.aluno.Aluno;
 import com.senai.classline.domain.frequencia.Frequencia;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,4 +19,7 @@ public interface FrequenciaRepository extends JpaRepository<Frequencia, Long> {
 
     @EntityGraph(attributePaths = {"aluno"})
     List<Frequencia> findByAula_IdAula(Long idAula);
+
+    @EntityGraph(attributePaths = {"aluno", "aula.disciplina"}) // Otimiza a busca
+    List<Frequencia> findByAula_Disciplina_IdDisciplinaAndAlunoIn(Long disciplinaId, List<Aluno> alunos);
 }

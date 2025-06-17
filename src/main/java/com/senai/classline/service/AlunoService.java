@@ -1,10 +1,7 @@
 package com.senai.classline.service;
 
 import com.senai.classline.domain.aluno.Aluno;
-import com.senai.classline.dto.Aluno.AlunoBoletimDTO;
-import com.senai.classline.dto.Aluno.AlunoDTO;
-import com.senai.classline.dto.Aluno.AlunoEditarDTO;
-import com.senai.classline.dto.Aluno.AlunoResponseDTO;
+import com.senai.classline.dto.Aluno.*;
 import com.senai.classline.dto.PessoaLoginRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
 
@@ -24,7 +21,7 @@ public interface AlunoService {
     List<AlunoResponseDTO> getByTurma(Long idTurma);
     List<AlunoResponseDTO> getByCurso(Long idCurso);
     List<AlunoResponseDTO> getByInstituicao(String idInstituicao);
-    List<AlunoResponseDTO> getAlunoByDisciplina(Long idDisciplina);
+    List<AlunoDisciplinaDTO> getAlunoByDisciplina(Long idDisciplina);
     AlunoBoletimDTO getBoletimByAluno(String idAluno);
 
 }

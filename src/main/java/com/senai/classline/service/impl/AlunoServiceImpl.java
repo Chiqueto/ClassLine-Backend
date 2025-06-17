@@ -11,10 +11,7 @@ import com.senai.classline.domain.nota.Nota;
 import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.domain.turma.Turma;
-import com.senai.classline.dto.Aluno.AlunoBoletimDTO;
-import com.senai.classline.dto.Aluno.AlunoDTO;
-import com.senai.classline.dto.Aluno.AlunoEditarDTO;
-import com.senai.classline.dto.Aluno.AlunoResponseDTO;
+import com.senai.classline.dto.Aluno.*;
 import com.senai.classline.dto.Nota.NotaBoletimDTO;
 import com.senai.classline.dto.PessoaLoginRequestDTO;
 import com.senai.classline.dto.ResponseDTO;
@@ -235,16 +232,67 @@ public class AlunoServiceImpl implements AlunoService {
 
 
     @Override
-    // MODIFICADO: Retorna List<AlunoResponseDTO>
-    public List<AlunoResponseDTO> getAlunoByDisciplina(Long disciplinaId) {
-        if (!disciplinaRepository.existsById(disciplinaId)) {
-            throw new NotFoundException("Disciplina com o ID informado não foi encontrada.");
-        }
+    @Transactional(readOnly = true)
+    public List<AlunoDisciplinaDTO> getAlunoByDisciplina(Long disciplinaId) {
+
+        // --- PASSO 1: BUSCAR TODOS OS DADOS EM LOTE ---
+
+        // 1.1 Valida a disciplina e busca a lista de alunos matriculados nela.
+        Disciplina disciplina = disciplinaRepository.findById(disciplinaId)
+                .orElseThrow(() -> new NotFoundException("Disciplina com o ID informado não foi encontrada."));
         List<Aluno> alunos = alunoRepository.findAlunosByDisciplinaId(disciplinaId);
-        // MODIFICADO: Converte a lista
-        return alunos.stream()
-                .map(this::convertToResponseDTO)
-                .collect(Collectors.toList());
+
+        if (alunos.isEmpty()) {
+            return new ArrayList<>(); // Retorna lista vazia se não há alunos.
+        }
+
+        // 1.2 Busca TODAS as notas e frequências para a lista de alunos e a disciplina específica.
+        List<Nota> todasAsNotas = notaRepository.findByAvaliacao_Disciplina_IdDisciplinaAndAlunoIn(disciplinaId, alunos);
+        List<Frequencia> todasAsFrequencias = frequenciaRepository.findByAula_Disciplina_IdDisciplinaAndAlunoIn(disciplinaId, alunos);
+
+
+        // --- PASSO 2: ORGANIZAR DADOS EM MAPAS PARA CÁLCULOS RÁPIDOS ---
+
+        // 2.1 Agrupa todas as notas por aluno.
+        Map<String, List<Nota>> mapaNotasPorAluno = todasAsNotas.stream()
+                .collect(Collectors.groupingBy(nota -> nota.getAluno().getIdAluno()));
+
+        // 2.2 Agrupa todos os registros de frequência por aluno.
+        Map<String, List<Frequencia>> mapaFrequenciaPorAluno = todasAsFrequencias.stream()
+                .collect(Collectors.groupingBy(frequencia -> frequencia.getAluno().getIdAluno()));
+
+
+        // --- PASSO 3: MONTAR O DTO FINAL, REALIZANDO OS CÁLCULOS EM MEMÓRIA ---
+        return alunos.stream().map(aluno -> {
+
+            // --- Cálculo da Frequência ---
+            List<Frequencia> frequenciasDoAluno = mapaFrequenciaPorAluno.getOrDefault(aluno.getIdAluno(), List.of());
+            long totalAulas = frequenciasDoAluno.size();
+            long presencas = frequenciasDoAluno.stream().filter(Frequencia::getPresente).count();
+            float frequenciaCalculada = (totalAulas == 0) ? 100.0f : ((float) presencas / totalAulas) * 100.0f;
+
+            // --- Cálculo da Média Ponderada ---
+            List<Nota> notasDoAluno = mapaNotasPorAluno.getOrDefault(aluno.getIdAluno(), List.of());
+            double somaPonderada = notasDoAluno.stream()
+                    .mapToDouble(n -> n.getValor() * n.getAvaliacao().getPeso())
+                    .sum();
+            double somaPesos = notasDoAluno.stream()
+                    .mapToDouble(n -> n.getAvaliacao().getPeso())
+                    .sum();
+            float mediaCalculada = (somaPesos == 0) ? 0.0f : (float) (somaPonderada / somaPesos);
+
+            // --- Montagem do DTO ---
+            return new AlunoDisciplinaDTO(
+                    aluno.getIdAluno(),
+                    aluno.getNome(),
+                    aluno.getEmail(),
+                    disciplina.getIdDisciplina(),
+                    disciplina.getNome(),
+                    mediaCalculada,
+                    frequenciaCalculada
+            );
+
+        }).collect(Collectors.toList());
     }
 
     @Override
