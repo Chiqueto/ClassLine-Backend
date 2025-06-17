@@ -7,7 +7,9 @@ import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestreId;
 import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.dto.disciplinaSemestre.DisciplinaSemestreResponseDTO;
+import com.senai.classline.dto.disciplinaSemestre.TrocarProfessorDTO;
 import com.senai.classline.enums.StatusSemestre;
+import com.senai.classline.exceptions.global.AlreadyExists;
 import com.senai.classline.exceptions.global.NotFoundException;
 import com.senai.classline.repositories.*;
 import com.senai.classline.service.DisciplinaSemestreService;
@@ -121,6 +123,63 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
                 .map(DisciplinaSemestreResponseDTO::new) // Usa o construtor do DTO
                 .collect(Collectors.toSet());
 
+    }
+
+    @Override
+    @Transactional
+    public DisciplinaSemestreResponseDTO trocarProfessor(TrocarProfessorDTO dto) {
+
+        // --- PASSO 1: VALIDAÇÃO DOS IDs (permanece igual) ---
+        Disciplina disciplina = disciplinaRepository.findById(dto.idDisciplina())
+                .orElseThrow(() -> new NotFoundException("Disciplina não encontrada."));
+        Semestre semestre = semestreRepository.findById(dto.idSemestre())
+                .orElseThrow(() -> new NotFoundException("Semestre não encontrado."));
+        Professor professorAntigo = professorRepository.findById(dto.idProfessorAntigo())
+                .orElseThrow(() -> new NotFoundException("Professor antigo não encontrado."));
+        Professor professorNovo = professorRepository.findById(dto.idProfessorNovo())
+                .orElseThrow(() -> new NotFoundException("Novo professor não encontrado."));
+
+        // --- PASSO 2: ENCONTRAR E INATIVAR O REGISTRO ANTIGO ---
+
+        DisciplinaSemestreId idAntigo = new DisciplinaSemestreId(
+                disciplina.getIdDisciplina(), semestre.getIdSemestre(), professorAntigo.getIdProfessor());
+
+        DisciplinaSemestre registroAntigo = disciplinaSemestreRepository.findById(idAntigo)
+                .orElseThrow(() -> new NotFoundException("A associação com o professor antigo não foi encontrada."));
+
+        // Guarda o status atual antes de inativar
+        StatusSemestre statusOriginal = registroAntigo.getStatus();
+
+        // ** A MUDANÇA PRINCIPAL: Em vez de apagar, mudamos o status **
+        registroAntigo.setStatus(StatusSemestre.INATIVO);
+
+
+        // --- PASSO 3: CRIAR O NOVO REGISTRO ATIVO ---
+
+        DisciplinaSemestreId idNovo = new DisciplinaSemestreId(
+                disciplina.getIdDisciplina(), semestre.getIdSemestre(), professorNovo.getIdProfessor());
+
+        // Verifica se já não existe um registro ativo para o novo professor (segurança extra)
+        if (disciplinaSemestreRepository.findById(idNovo).isPresent()) {
+            throw new AlreadyExists("Este professor já está alocado para esta disciplina/semestre.");
+        }
+
+        DisciplinaSemestre novoRegistro = new DisciplinaSemestre();
+        novoRegistro.setId(idNovo);
+        novoRegistro.setDisciplina(disciplina);
+        novoRegistro.setSemestre(semestre);
+        novoRegistro.setProfessor(professorNovo);
+        // O novo registro herda o status que o antigo tinha (ex: EM_ANDAMENTO)
+        novoRegistro.setStatus(statusOriginal);
+
+
+        // --- PASSO 4: SALVAR AMBAS AS ALTERAÇÕES E RETORNAR ---
+
+        // Salva o registro antigo (agora inativo) e o novo registro (ativo)
+        disciplinaSemestreRepository.saveAll(List.of(registroAntigo, novoRegistro));
+
+        // Retorna o DTO do novo registro, que é o que está ativo.
+        return new DisciplinaSemestreResponseDTO(novoRegistro);
     }
 
 }

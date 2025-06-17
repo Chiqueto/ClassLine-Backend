@@ -3,7 +3,9 @@ package com.senai.classline.controllers.disciplinasemestre;
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestre;
 import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.dto.disciplinaSemestre.DisciplinaSemestreResponseDTO;
+import com.senai.classline.dto.disciplinaSemestre.TrocarProfessorDTO;
 import com.senai.classline.service.DisciplinaSemestreService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +63,14 @@ public class DisciplinaSemestreController {
     public ResponseEntity<Set<DisciplinaSemestreResponseDTO>> getDisciplinasSemestreByAluno(@PathVariable String id_aluno) {
         Set<DisciplinaSemestreResponseDTO> response = service.getDisciplinasSemestreByAluno(id_aluno);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PreAuthorize("hasRole('INSTITUICAO')")
+    @PutMapping("/trocar-professor")
+    public ResponseEntity<DisciplinaSemestreResponseDTO> trocarProfessor(@RequestBody @Valid TrocarProfessorDTO dto) {
+        // O @RequestBody pega o JSON enviado pelo frontend e o transforma no nosso objeto TrocarProfessorDTO
+        DisciplinaSemestreResponseDTO response = service.trocarProfessor(dto);
+        return ResponseEntity.ok(response);
     }
 
 }

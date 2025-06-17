@@ -19,7 +19,7 @@ public class StatusUpdateScheduler {
      * Método agendado para rodar todos os dias às 02:00 da manhã.
      * Agora ele executa duas lógicas de atualização: iniciar e concluir semestres.
      */
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 2 * * ?")
     public void verificarEAtualizarStatus() {
         log.info("INICIANDO TAREFA AGENDADA: Verificação de status de DisciplinaSemestre...");
 
