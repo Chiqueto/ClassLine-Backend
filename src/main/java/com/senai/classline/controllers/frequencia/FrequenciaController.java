@@ -58,7 +58,7 @@ public class FrequenciaController {
     }
 
     @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
-    @PutMapping("/disciplina/{idDisciplina}/professor/{idProfessor}/data/{data}")
+    @PutMapping("/disciplina/{idDisciplina}/professor/{idProfessor}")
     public ResponseEntity<List<FrequenciaResponseDTO>> putFrequencia(
             @PathVariable Long idDisciplina,
             @PathVariable String idProfessor,
