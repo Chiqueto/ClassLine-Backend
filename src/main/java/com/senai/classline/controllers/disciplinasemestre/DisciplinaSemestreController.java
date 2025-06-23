@@ -73,7 +73,7 @@ public class DisciplinaSemestreController {
         DisciplinaSemestreResponseDTO response = service.trocarProfessor(dto);
         return ResponseEntity.ok(response);
     }
-    @GetMapping("/desempenho-alunos")
+    @GetMapping("/desempenho-alunos/disciplina/{idDisciplina}/semestre/{idSemestre}/professor/{idProfessor}")
     public ResponseEntity<List<AlunoDesempenhoDTO>> getDesempenhoAlunos(
             @RequestParam Long idDisciplina,
             @RequestParam Long idSemestre,
