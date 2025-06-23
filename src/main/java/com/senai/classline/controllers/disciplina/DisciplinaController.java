@@ -1,6 +1,7 @@
 package com.senai.classline.controllers.disciplina;
 
 
+import com.senai.classline.domain.disciplina.Disciplina;
 import com.senai.classline.dto.disciplina.DisciplinaDTO;
 import com.senai.classline.dto.disciplina.DisciplinaResponseDTO;
 import com.senai.classline.service.impl.DisciplinaServiceImpl;
@@ -52,5 +53,16 @@ public class DisciplinaController {
     public ResponseEntity<DisciplinaResponseDTO> inactivateDisciplina(@PathVariable Long id_disciplina, @PathVariable String id_instituicao){
         final DisciplinaResponseDTO disciplina = this.service.inativar(id_disciplina, id_instituicao);
         return ResponseEntity.status(HttpStatus.OK).body(disciplina);
+    }
+
+    @PreAuthorize("hasRole('PROFESSOR')")
+    @GetMapping("/disciplinas/professor/{idProfessor}")
+    public ResponseEntity<List<DisciplinaResponseDTO>> getDisciplinasByProfessor(@PathVariable String idProfessor) {
+        List<DisciplinaResponseDTO> disciplinas = service.buscarPorProfessor(idProfessor);
+
+        if (disciplinas.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(disciplinas);
     }
 }

@@ -1,5 +1,6 @@
 package com.senai.classline.service;
 
+import com.senai.classline.domain.disciplina.Disciplina;
 import com.senai.classline.dto.disciplina.DisciplinaDTO;
 import com.senai.classline.dto.disciplina.DisciplinaResponseDTO;
 
@@ -15,4 +16,6 @@ public interface DisciplinaService {
     List<DisciplinaResponseDTO> getDisciplinaByInstituicao(String id_instituicao);
 
     List<DisciplinaResponseDTO> getDisciplinaByTurma(Long id_turma);
+
+    List<DisciplinaResponseDTO> buscarPorProfessor(String idProfessor);
 }

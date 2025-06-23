@@ -25,4 +25,6 @@ public interface DisciplinaRepository extends JpaRepository<Disciplina, Long> {
             "WHERE g.turma.id = :turmaId")
     List<Disciplina> findDisciplinasByTurmaId(@Param("turmaId") Long turmaId);
 
+    List<Disciplina> findDistinctByDisciplinasSemestreProfessorIdProfessor(String idProfessor);
+
 }

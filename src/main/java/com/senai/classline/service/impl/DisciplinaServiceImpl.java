@@ -14,6 +14,7 @@ import com.senai.classline.repositories.TurmaRepository;
 import com.senai.classline.service.DisciplinaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -110,4 +111,16 @@ public class DisciplinaServiceImpl implements DisciplinaService {
                 disciplina.getInstituicao().getIdInstituicao()
         );
     }
+    @Override
+    @Transactional(readOnly = true)
+    public List<DisciplinaResponseDTO> buscarPorProfessor(String idProfessor) {
+        List<Disciplina> disciplinas = repository.findDistinctByDisciplinasSemestreProfessorIdProfessor(idProfessor);
+
+        // 2. Converte a lista de Entidades para uma lista de DTOs usando um método de mapeamento.
+        return disciplinas.stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList()); // Usando toList() ou Collectors.toList()
+    }
+
+
 }
