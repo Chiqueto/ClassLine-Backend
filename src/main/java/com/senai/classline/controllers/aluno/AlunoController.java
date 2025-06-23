@@ -81,7 +81,7 @@ public class AlunoController {
         return ResponseEntity.status(HttpStatus.OK).body(alunos);
     }
 
-    @PreAuthorize("hasRole('ALUNO')")
+    @PreAuthorize("hasRole('ALUNO') or hasRole('PROFESSOR')")
     @GetMapping("/boletim/{id_aluno}")
     public ResponseEntity<AlunoBoletimDTO> getBoletim(@PathVariable String id_aluno) {
         AlunoBoletimDTO boletim = alunoService.getBoletimByAluno(id_aluno);
