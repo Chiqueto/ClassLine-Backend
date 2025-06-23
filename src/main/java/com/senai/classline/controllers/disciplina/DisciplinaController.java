@@ -56,7 +56,7 @@ public class DisciplinaController {
     }
 
     @PreAuthorize("hasRole('PROFESSOR')")
-    @GetMapping("/disciplinas/professor/{idProfessor}")
+    @GetMapping("/professor/{idProfessor}")
     public ResponseEntity<List<DisciplinaResponseDTO>> getDisciplinasByProfessor(@PathVariable String idProfessor) {
         List<DisciplinaResponseDTO> disciplinas = service.buscarPorProfessor(idProfessor);
 

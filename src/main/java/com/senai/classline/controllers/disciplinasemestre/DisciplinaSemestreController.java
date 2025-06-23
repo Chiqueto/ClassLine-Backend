@@ -2,6 +2,7 @@ package com.senai.classline.controllers.disciplinasemestre;
 
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestre;
 import com.senai.classline.domain.semestre.Semestre;
+import com.senai.classline.dto.Aluno.AlunoDesempenhoDTO;
 import com.senai.classline.dto.disciplinaSemestre.DisciplinaSemestreResponseDTO;
 import com.senai.classline.dto.disciplinaSemestre.TrocarProfessorDTO;
 import com.senai.classline.service.DisciplinaSemestreService;
@@ -72,5 +73,21 @@ public class DisciplinaSemestreController {
         DisciplinaSemestreResponseDTO response = service.trocarProfessor(dto);
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/desempenho-alunos")
+    public ResponseEntity<List<AlunoDesempenhoDTO>> getDesempenhoAlunos(
+            @RequestParam Long idDisciplina,
+            @RequestParam Long idSemestre,
+            @RequestParam String idProfessor) {
 
+        // O controller delega toda a lógica de negócio para a camada de serviço.
+        List<AlunoDesempenhoDTO> desempenho = service.getDesempenhoAlunosPorTurma(
+                idDisciplina,
+                idSemestre,
+                idProfessor
+        );
+
+        // Retorna a lista com status 200 OK.
+        // Se a lista estiver vazia, o corpo da resposta será um array JSON vazio: []
+        return ResponseEntity.status(HttpStatus.OK).body(desempenho);
+    }
 }

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -48,4 +49,7 @@ public interface DisciplinaSemestreRepository extends JpaRepository<DisciplinaSe
             "AND ds.status = com.senai.classline.enums.StatusSemestre.EM_ANDAMENTO")
     int atualizarStatusParaConcluido(@Param("hoje") Date hoje);
 
+    Optional<DisciplinaSemestre> findById_IdDisciplinaAndId_IdSemestreAndId_IdProfessor(
+            Long idDisciplina, Long idSemestre, String idProfessor
+    );
 }

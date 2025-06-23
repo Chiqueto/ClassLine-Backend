@@ -4,8 +4,13 @@ import com.senai.classline.domain.aluno.Aluno;
 import com.senai.classline.domain.disciplina.Disciplina;
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestre;
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestreId;
+import com.senai.classline.domain.frequencia.Frequencia;
+import com.senai.classline.domain.grade.Grade;
+import com.senai.classline.domain.nota.Nota;
 import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.domain.semestre.Semestre;
+import com.senai.classline.domain.turma.Turma;
+import com.senai.classline.dto.Aluno.AlunoDesempenhoDTO;
 import com.senai.classline.dto.disciplinaSemestre.DisciplinaSemestreResponseDTO;
 import com.senai.classline.dto.disciplinaSemestre.TrocarProfessorDTO;
 import com.senai.classline.enums.StatusSemestre;
@@ -17,9 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +35,8 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
     private final ProfessorRepository professorRepository;
     private final TurmaRepository turmaRepository;
     private final AlunoRepository alunoRepository;
+    private final NotaRepository notaRepository;
+    private final FrequenciaRepository frequenciaRepository;
 
 
 
@@ -180,6 +185,96 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
 
         // Retorna o DTO do novo registro, que é o que está ativo.
         return new DisciplinaSemestreResponseDTO(novoRegistro);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AlunoDesempenhoDTO> getDesempenhoAlunosPorTurma(Long idDisciplina, Long idSemestre, String idProfessor) {
+
+        // --- PASSO 1: ENCONTRAR A TURMA CORRETA A PARTIR DOS FILTROS ---
+
+        // 1.1. Usa o novo método do repositório para encontrar a instância da classe.
+        DisciplinaSemestre disciplinaSemestre = disciplinaSemestreRepository
+                .findById_IdDisciplinaAndId_IdSemestreAndId_IdProfessor(idDisciplina, idSemestre, idProfessor)
+                .orElseThrow(() -> new NotFoundException("Nenhuma classe (Disciplina/Semestre/Professor) encontrada para os filtros fornecidos."));
+
+        // 1.2. A partir do DisciplinaSemestre, navega até a Grade.
+        Semestre semestre = disciplinaSemestre.getSemestre();
+        if (semestre == null || semestre.getGrade() == null) {
+            throw new IllegalStateException("A classe encontrada não possui Semestre ou Grade associada.");
+        }
+        Grade grade = semestre.getGrade();
+
+        // 1.3. Usa a Grade para encontrar a Turma correspondente.
+        Turma turma = turmaRepository.findByGrade(grade)
+                .orElseThrow(() -> new NotFoundException("Nenhuma Turma encontrada para a grade da classe."));
+
+        // 1.4. Finalmente, obtém a lista de alunos da Turma.
+        Set<Aluno> alunosDaTurma = turma.getAluno();
+        if (alunosDaTurma.isEmpty()) {
+            return List.of(); // Retorna lista vazia se não houver alunos.
+        }
+        Long idTurma = turma.getIdTurma();
+
+
+        // --- PASSO 2: BUSCAR DADOS DE DESEMPENHO EM LOTE (Esta parte permanece igual) ---
+
+        List<Nota> notasDaTurma = notaRepository
+                .findByAvaliacao_Turma_IdTurmaAndAvaliacao_Disciplina_IdDisciplina(idTurma, idDisciplina);
+
+        List<Frequencia> frequenciasDaTurma = frequenciaRepository
+                .findByAluno_Turma_IdTurmaAndAula_Disciplina_IdDisciplina(idTurma, idDisciplina);
+
+
+        // --- PASSO 3: ORGANIZAR OS DADOS EM MEMÓRIA (Esta parte permanece igual) ---
+
+        Map<String, List<Nota>> mapaDeNotasPorIdAluno = notasDaTurma.stream()
+                .collect(Collectors.groupingBy(nota -> nota.getAluno().getIdAluno()));
+
+        Map<String, List<Frequencia>> mapaDeFrequenciasPorIdAluno = frequenciasDaTurma.stream()
+                .collect(Collectors.groupingBy(frequencia -> frequencia.getAluno().getIdAluno()));
+
+
+        // --- PASSO 4: MONTAR O RESULTADO FINAL (Esta parte permanece igual) ---
+
+        return alunosDaTurma.stream()
+                .map(aluno -> {
+                    List<Nota> notasDoAluno = mapaDeNotasPorIdAluno.getOrDefault(aluno.getIdAluno(), List.of());
+                    List<Frequencia> frequenciasDoAluno = mapaDeFrequenciasPorIdAluno.getOrDefault(aluno.getIdAluno(), List.of());
+
+                    float mediaFinal = calcularMediaPonderada(notasDoAluno);
+                    float percentualFrequencia = calcularPercentualFrequencia(frequenciasDoAluno);
+
+                    return new AlunoDesempenhoDTO(
+                            aluno.getIdAluno(),
+                            aluno.getNome(),
+                            mediaFinal,
+                            percentualFrequencia
+                    );
+                })
+                .sorted(Comparator.comparing(AlunoDesempenhoDTO::nomeAluno))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Método auxiliar para calcular a média ponderada de uma lista de notas.
+     * Reutilizado do seu exemplo.
+     */
+    private float calcularMediaPonderada(List<Nota> notas) {
+        if (notas == null || notas.isEmpty()) return 0.0f;
+        double somaPonderada = notas.stream().mapToDouble(n -> n.getValor() * n.getAvaliacao().getPeso()).sum();
+        double somaPesos = notas.stream().mapToDouble(n -> n.getAvaliacao().getPeso()).sum();
+        return (somaPesos == 0) ? 0.0f : (float) (somaPonderada / somaPesos);
+    }
+
+    /**
+     * Método auxiliar para calcular o percentual de frequência.
+     */
+    private float calcularPercentualFrequencia(List<Frequencia> frequencias) {
+        if (frequencias == null || frequencias.isEmpty()) return 100.0f; // Se não houve aulas, 100%
+        long totalAulasRegistradas = frequencias.size();
+        long presencas = frequencias.stream().filter(Frequencia::getPresente).count();
+        return ((float) presencas / totalAulasRegistradas) * 100.0f;
     }
 
 }

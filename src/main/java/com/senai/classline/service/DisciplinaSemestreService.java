@@ -1,6 +1,7 @@
 package com.senai.classline.service;
 
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestre;
+import com.senai.classline.dto.Aluno.AlunoDesempenhoDTO;
 import com.senai.classline.dto.disciplinaSemestre.DisciplinaSemestreResponseDTO;
 import com.senai.classline.dto.disciplinaSemestre.TrocarProfessorDTO;
 
@@ -19,4 +20,6 @@ public interface DisciplinaSemestreService {
     Set<DisciplinaSemestreResponseDTO> getDisciplinasSemestreByAluno(String id_aluno);
 
     DisciplinaSemestreResponseDTO trocarProfessor(TrocarProfessorDTO dto);
+
+    List<AlunoDesempenhoDTO> getDesempenhoAlunosPorTurma(Long idDisciplina, Long idSemestre, String idProfessor);
 }
