@@ -6,7 +6,7 @@ import com.senai.classline.domain.curso.Curso;
 import com.senai.classline.domain.disciplina.Disciplina;
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestre;
 import com.senai.classline.domain.frequencia.Frequencia;
-import com.senai.classline.domain.instituicao.Instituicao; // Assuming Instituicao can be accessed
+import com.senai.classline.domain.instituicao.Instituicao;
 import com.senai.classline.domain.nota.Nota;
 import com.senai.classline.domain.professor.Professor;
 import com.senai.classline.domain.semestre.Semestre;
@@ -18,16 +18,16 @@ import com.senai.classline.dto.ResponseDTO;
 import com.senai.classline.dto.avaliacao.AvaliacaoBoletimDTO;
 import com.senai.classline.dto.disciplina.DisciplinaBoletimDTO;
 import com.senai.classline.enums.StatusPessoa;
-import com.senai.classline.enums.UserType; // Assuming UserType.ALUNO is defined
+import com.senai.classline.enums.UserType; 
 import com.senai.classline.exceptions.global.AlreadyExists;
-import com.senai.classline.exceptions.global.LoginFail; // Assuming this exception exists
+import com.senai.classline.exceptions.global.LoginFail; 
 import com.senai.classline.exceptions.global.NotFoundException;
-import com.senai.classline.exceptions.global.UnauthorizedException; // Generic unauthorized
-import com.senai.classline.infra.security.TokenService; // To be injected
+import com.senai.classline.exceptions.global.UnauthorizedException;
+import com.senai.classline.infra.security.TokenService; 
 import com.senai.classline.repositories.*;
 import com.senai.classline.service.AlunoService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder; // To be injected
+import org.springframework.security.crypto.password.PasswordEncoder; 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,7 +76,7 @@ public class AlunoServiceImpl implements AlunoService {
         Aluno aluno = new Aluno();
         aluno.setNome(alunoDTO.nome());
         aluno.setEmail(alunoDTO.email());
-        aluno.setSenha(passwordEncoder.encode(alunoDTO.senha())); // Encode password
+        aluno.setSenha(passwordEncoder.encode(alunoDTO.senha()));
         aluno.setCpf(alunoDTO.cpf());
         aluno.setDt_nascimento(alunoDTO.dt_nascimento());
         aluno.setGenero(alunoDTO.genero());
@@ -86,7 +86,7 @@ public class AlunoServiceImpl implements AlunoService {
         aluno.setCidade(alunoDTO.cidade());
         aluno.setTelefone(alunoDTO.telefone());
         aluno.setTurno(alunoDTO.turno());
-        aluno.setStatus(StatusPessoa.ATIVO); // Default to ATIVO on creation
+        aluno.setStatus(StatusPessoa.ATIVO);
         aluno.setTurma(turma);
         aluno.setCurso(curso);
         aluno.setDt_inicio(alunoDTO.dt_inicio());
@@ -97,21 +97,14 @@ public class AlunoServiceImpl implements AlunoService {
     }
 
     @Override
-    @Transactional // <-- ESSENCIAL para garantir que as alterações sejam salvas no banco!
+    @Transactional
     public AlunoResponseDTO editar(AlunoEditarDTO body, String id_aluno) {
-        // 1. Busca o aluno existente. Se não encontrar, lança exceção.
         Aluno aluno = this.alunoRepository.findById(id_aluno)
                 .orElseThrow(() -> new NotFoundException("Aluno não encontrado com ID: " + id_aluno));
-
-        // --- ATUALIZAÇÃO DOS CAMPOS ---
-        // Verifica cada campo do DTO. Se não for nulo, atualiza o objeto 'aluno'.
-
-        // --- Dados Pessoais ---
         if (body.nome() != null && !body.nome().isBlank()) {
             aluno.setNome(body.nome());
         }
         if (body.email() != null && !body.email().equals(aluno.getEmail())) {
-            // Verifica se o novo e-mail já está em uso por outro aluno
             alunoRepository.findByEmail(body.email()).ifPresent(a -> {
                 if (!a.getIdAluno().equals(aluno.getIdAluno())) {
                     throw new AlreadyExists("E-mail já cadastrado!");
@@ -135,13 +128,11 @@ public class AlunoServiceImpl implements AlunoService {
             aluno.setTelefone(body.telefone());
         }
 
-        // --- Endereço ---
         if (body.logradouro() != null) aluno.setLogradouro(body.logradouro());
         if (body.bairro() != null) aluno.setBairro(body.bairro());
         if (body.numero() != null) aluno.setNumero(body.numero());
         if (body.cidade() != null) aluno.setCidade(body.cidade());
 
-        // --- Dados Acadêmicos ---
         if (body.turno() != null) {
             aluno.setTurno(body.turno());
         }
@@ -155,7 +146,6 @@ public class AlunoServiceImpl implements AlunoService {
             aluno.setDt_fim(body.dt_fim());
         }
 
-        // --- Associações com outras entidades ---
         if (body.id_turma() != null) {
             Turma turma = turmaRepository.findById(body.id_turma())
                     .orElseThrow(() -> new NotFoundException("Turma não encontrada com ID: " + body.id_turma()));
@@ -167,27 +157,21 @@ public class AlunoServiceImpl implements AlunoService {
             aluno.setCurso(curso);
         }
 
-        // 2. Salva a entidade 'aluno' com todas as alterações.
-        //    Com @Transactional, esta chamada é tecnicamente opcional, mas não prejudica.
         Aluno alunoEditado = this.alunoRepository.save(aluno);
 
-        // 3. Converte a entidade atualizada para um DTO de resposta.
         return convertToResponseDTO(alunoEditado);
     }
 
     @Override
-    // MODIFICADO: Retorna AlunoResponseDTO
     public AlunoResponseDTO inativar(String id_aluno) {
         Aluno aluno = this.alunoRepository.findById(id_aluno)
                 .orElseThrow(() -> new NotFoundException("Aluno não encontrado com ID: " + id_aluno));
-
-        // ... (lógica de autorização permanece a mesma) ...
 
         aluno.setStatus(StatusPessoa.INATIVO);
         aluno.setDt_fim(Date.from(ZonedDateTime.now(ZoneId.of("America/Sao_Paulo")).toInstant()));
 
         Aluno alunoInativado = this.alunoRepository.save(aluno);
-        return convertToResponseDTO(alunoInativado); // MODIFICADO: Converte para DTO antes de retornar
+        return convertToResponseDTO(alunoInativado);
     }
 
 
@@ -203,7 +187,7 @@ public class AlunoServiceImpl implements AlunoService {
         }
 
         Aluno aluno = alunoOptional.get();
-        String token = tokenService.generateToken(aluno, UserType.ALUNO); // Assuming UserType.ALUNO exists
+        String token = tokenService.generateToken(aluno, UserType.ALUNO); 
 
         String idInstituicao = null;
         if (aluno.getCurso().getInstituicao() != null) {
@@ -213,48 +197,40 @@ public class AlunoServiceImpl implements AlunoService {
         } else if (aluno.getTurma() != null && aluno.getTurma().getCurso() != null && aluno.getTurma().getCurso().getInstituicao() != null) {
             idInstituicao = aluno.getTurma().getCurso().getInstituicao().getIdInstituicao();
         }
-        // If idInstituicao is mandatory for ResponseDTO, and might be null, consider how to handle.
-        // For now, it can be null if not found through the chain.
 
-        return new ResponseDTO(aluno.getIdAluno(), token); // Assuming ResponseDTO can take idAluno, idInstituicao, token, userType
+        return new ResponseDTO(aluno.getIdAluno(), token); 
     }
 
     @Override
-    // MODIFICADO: Retorna AlunoResponseDTO
     public AlunoResponseDTO getById(String idAluno) {
         Aluno aluno = this.alunoRepository.findById(idAluno)
                 .orElseThrow(() -> new NotFoundException("Aluno não encontrado com ID: " + idAluno));
-        return convertToResponseDTO(aluno); // MODIFICADO: Converte para DTO
+        return convertToResponseDTO(aluno);
     }
 
     @Override
-    // MODIFICADO: Retorna List<AlunoResponseDTO>
     public List<AlunoResponseDTO> getByTurma(Long idTurma) {
         if (!turmaRepository.existsById(idTurma)) {
             throw new NotFoundException("Turma não encontrada com ID: " + idTurma);
         }
         List<Aluno> alunos = this.alunoRepository.findByTurma_idTurma(idTurma);
-        // MODIFICADO: Converte a lista de entidades para uma lista de DTOs
         return alunos.stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    // MODIFICADO: Retorna List<AlunoResponseDTO>
     public List<AlunoResponseDTO> getByCurso(Long idCurso) {
         if (!cursoRepository.existsById(idCurso)) {
             throw new NotFoundException("Curso não encontrado com ID: " + idCurso);
         }
         List<Aluno> alunos = this.alunoRepository.findByCurso_idCurso(idCurso);
-        // MODIFICADO: Converte a lista
         return alunos.stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Override
-    // MODIFICADO: Retorna List<AlunoResponseDTO>
     public List<AlunoResponseDTO> getByInstituicao(String idInstituicao) {
         if (!instituicaoRepository.existsById(idInstituicao)) {
             throw new NotFoundException("Instituição não encontrada com ID: " + idInstituicao);
@@ -269,7 +245,6 @@ public class AlunoServiceImpl implements AlunoService {
             todosAlunosDaInstituicao.addAll(alunoRepository.findByCurso_idCurso(curso.getIdCurso()));
         }
 
-        // MODIFICADO: Converte a lista
         return todosAlunosDaInstituicao.stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
@@ -280,43 +255,31 @@ public class AlunoServiceImpl implements AlunoService {
     @Transactional(readOnly = true)
     public List<AlunoDisciplinaDTO> getAlunoByDisciplina(Long disciplinaId) {
 
-        // --- PASSO 1: BUSCAR TODOS OS DADOS EM LOTE ---
-
-        // 1.1 Valida a disciplina e busca a lista de alunos matriculados nela.
         Disciplina disciplina = disciplinaRepository.findById(disciplinaId)
                 .orElseThrow(() -> new NotFoundException("Disciplina com o ID informado não foi encontrada."));
         List<Aluno> alunos = alunoRepository.findAlunosByDisciplinaId(disciplinaId);
 
         if (alunos.isEmpty()) {
-            return new ArrayList<>(); // Retorna lista vazia se não há alunos.
+            return new ArrayList<>();
         }
 
-        // 1.2 Busca TODAS as notas e frequências para a lista de alunos e a disciplina específica.
         List<Nota> todasAsNotas = notaRepository.findByAvaliacao_Disciplina_IdDisciplinaAndAlunoIn(disciplinaId, alunos);
         List<Frequencia> todasAsFrequencias = frequenciaRepository.findByAula_Disciplina_IdDisciplinaAndAlunoIn(disciplinaId, alunos);
 
-
-        // --- PASSO 2: ORGANIZAR DADOS EM MAPAS PARA CÁLCULOS RÁPIDOS ---
-
-        // 2.1 Agrupa todas as notas por aluno.
         Map<String, List<Nota>> mapaNotasPorAluno = todasAsNotas.stream()
                 .collect(Collectors.groupingBy(nota -> nota.getAluno().getIdAluno()));
 
-        // 2.2 Agrupa todos os registros de frequência por aluno.
         Map<String, List<Frequencia>> mapaFrequenciaPorAluno = todasAsFrequencias.stream()
                 .collect(Collectors.groupingBy(frequencia -> frequencia.getAluno().getIdAluno()));
 
 
-        // --- PASSO 3: MONTAR O DTO FINAL, REALIZANDO OS CÁLCULOS EM MEMÓRIA ---
         return alunos.stream().map(aluno -> {
 
-            // --- Cálculo da Frequência ---
             List<Frequencia> frequenciasDoAluno = mapaFrequenciaPorAluno.getOrDefault(aluno.getIdAluno(), List.of());
             long totalAulas = frequenciasDoAluno.size();
             long presencas = frequenciasDoAluno.stream().filter(Frequencia::getPresente).count();
             float frequenciaCalculada = (totalAulas == 0) ? 100.0f : ((float) presencas / totalAulas) * 100.0f;
 
-            // --- Cálculo da Média Ponderada ---
             List<Nota> notasDoAluno = mapaNotasPorAluno.getOrDefault(aluno.getIdAluno(), List.of());
             double somaPonderada = notasDoAluno.stream()
                     .mapToDouble(n -> n.getValor() * n.getAvaliacao().getPeso())
@@ -326,7 +289,6 @@ public class AlunoServiceImpl implements AlunoService {
                     .sum();
             float mediaCalculada = (somaPesos == 0) ? 0.0f : (float) (somaPonderada / somaPesos);
 
-            // --- Montagem do DTO ---
             return new AlunoDisciplinaDTO(
                     aluno.getIdAluno(),
                     aluno.getNome(),
@@ -344,36 +306,25 @@ public class AlunoServiceImpl implements AlunoService {
     @Transactional(readOnly = true)
     public AlunoBoletimDTO getBoletimByAluno(String idAluno) {
 
-        // --- PASSO 1: BUSCAR TODOS OS DADOS DO BANCO (EM POUCAS E EFICIENTES CONSULTAS) ---
-
-        // 1.1. Valida e busca a entidade principal, o Aluno.
         Aluno aluno = this.alunoRepository.findById(idAluno)
                 .orElseThrow(() -> new NotFoundException("Aluno não encontrado com ID: " + idAluno));
 
-        // 1.2. Busca todas as disciplinas do aluno de uma vez.
         Set<Disciplina> disciplinasDoAluno = disciplinaSemestreRepository.findByAluno(idAluno)
                 .stream()
                 .map(DisciplinaSemestre::getDisciplina)
                 .collect(Collectors.toSet());
 
-        // 1.3. Busca todas as avaliações e notas do aluno de uma vez.
         Set<Avaliacao> avaliacoesDoAluno = avaliacaoRepository.findByAluno(idAluno);
         List<Nota> notasDoAluno = notaRepository.findByAluno_IdAluno(idAluno);
 
         List<Frequencia> todasAsFrequenciasDoAluno = frequenciaRepository.findByAluno_IdAluno(idAluno);
 
-
-        // --- PASSO 2: ORGANIZAR OS DADOS EM MEMÓRIA PARA ACESSO RÁPIDO (A MÁGICA ACONTECE AQUI) ---
-
-        // 2.1. Cria um mapa de notas, onde a chave é o ID da avaliação.
         Map<Long, Nota> mapaDeNotasPorAvaliacaoId = notasDoAluno.stream()
                 .collect(Collectors.toMap(
                         nota -> nota.getAvaliacao().getIdAvaliacao(),
                         Function.identity()
                 ));
 
-        // 2.2. Converte a lista de entidades Avaliacao para uma lista de AvaliacaoBoletimDTO.
-        //     Cada DTO já é criado com sua nota correspondente, pega do mapa.
         List<AvaliacaoBoletimDTO> todosOsAvaliacaoDTOs = avaliacoesDoAluno.stream()
                 .map(avaliacao -> {
                     Nota notaCorrespondente = mapaDeNotasPorAvaliacaoId.get(avaliacao.getIdAvaliacao());
@@ -389,13 +340,9 @@ public class AlunoServiceImpl implements AlunoService {
                 })
                 .toList();
 
-        // 2.3. Agrupa os DTOs de avaliação pelo ID da disciplina a que pertencem.
-        //     Isso cria um mapa onde cada disciplina tem sua própria lista de avaliações.
-        //     (Pré-requisito: a entidade Avaliacao deve ter um campo `private Disciplina disciplina;`)
         Map<Long, Set<AvaliacaoBoletimDTO>> mapaDeAvaliacoesPorDisciplina = todosOsAvaliacaoDTOs.stream()
                 .collect(Collectors.groupingBy(
-                        // Para agrupar, precisamos saber a qual disciplina cada avaliação pertence.
-                        // Assumindo que Avaliacao tem getDisciplina()
+
                         avaliacaoDTO -> avaliacoesDoAluno.stream()
                                 .filter(a -> a.getIdAvaliacao().equals(avaliacaoDTO.idAvaliacao()))
                                 .findFirst().get().getDisciplina().getIdDisciplina(),
@@ -404,9 +351,7 @@ public class AlunoServiceImpl implements AlunoService {
 
         Map<Long, Float> mapaDeFrequenciaPorDisciplina = todasAsFrequenciasDoAluno.stream()
                 .collect(Collectors.groupingBy(
-                        // Agrupa os registros de frequência pelo ID da disciplina
                         f -> f.getAula().getDisciplina().getIdDisciplina(),
-                        // Para cada grupo, calcula a porcentagem de frequência
                         Collectors.collectingAndThen(
                                 Collectors.toList(),
                                 listaDeFrequencias -> {
@@ -418,27 +363,20 @@ public class AlunoServiceImpl implements AlunoService {
                         )
                 ));
 
-        // --- PASSO 3: MONTAR A LISTA DE DISCIPLINAS COM SUAS AVALIAÇÕES ---
-
-        // 3.1. Itera sobre as disciplinas do aluno e monta o DTO de cada uma.
         Set<DisciplinaBoletimDTO> disciplinasBoletimDTOs = disciplinasDoAluno.stream()
                 .map(disciplina -> {
-                    // Pega a frequência calculada do mapa. Se não houver registro, assume 100%.
                     float frequencia = mapaDeFrequenciaPorDisciplina.getOrDefault(disciplina.getIdDisciplina(), 100.0f);
 
                     return new DisciplinaBoletimDTO(
                             disciplina.getIdDisciplina(),
                             disciplina.getNome(),
                             mapaDeAvaliacoesPorDisciplina.getOrDefault(disciplina.getIdDisciplina(), Set.of()),
-                            frequencia // <-- Passando a frequência calculada
+                            frequencia
                     );
                 })
                 .collect(Collectors.toSet());
 
 
-        // --- PASSO 4: MONTAR E RETORNAR O BOLETIM FINAL ---
-
-        // 4.1. Com todas as partes prontas, cria o DTO final do boletim.
         return new AlunoBoletimDTO(
                 disciplinasBoletimDTOs
         );
@@ -446,12 +384,10 @@ public class AlunoServiceImpl implements AlunoService {
 
 
     private AlunoResponseDTO convertToResponseDTO(Aluno aluno) {
-        // Lógica para obter o ID da Instituição de forma segura
         String idInstituicao = (aluno.getCurso() != null && aluno.getCurso().getInstituicao() != null)
                 ? aluno.getCurso().getInstituicao().getIdInstituicao()
                 : null;
 
-        // Lógica para obter IDs de Turma e Curso de forma segura
         Long idTurma = (aluno.getTurma() != null) ? aluno.getTurma().getIdTurma() : null;
         Long idCurso = (aluno.getCurso() != null) ? aluno.getCurso().getIdCurso() : null;
 
@@ -481,42 +417,27 @@ public class AlunoServiceImpl implements AlunoService {
     @Transactional(readOnly = true)
     public Set<ComparativoMediaDisciplinaDTO> getComparativoMediasPorDisciplina(String idAluno) {
 
-        // --- PASSO 1: BUSCAR TODOS OS DADOS EM LOTE ---
-
-        // 1.1. Valida e busca o aluno para obter sua turma.
         Aluno aluno = alunoRepository.findById(idAluno)
                 .orElseThrow(() -> new NotFoundException("Aluno não encontrado com ID: " + idAluno));
         Turma turma = aluno.getTurma();
 
-        // 1.2. Busca todas as disciplinas relacionadas ao aluno.
         Set<Disciplina> disciplinasDoAluno = disciplinaSemestreRepository.findByAluno(idAluno)
                 .stream().map(DisciplinaSemestre::getDisciplina).collect(Collectors.toSet());
 
-        // 1.3. Busca TODAS as notas da TURMA INTEIRA de uma vez.
         List<Nota> notasDaTurmaInteira = notaRepository.findByAvaliacao_Turma_IdTurma(turma.getIdTurma());
 
 
-        // --- PASSO 2: ORGANIZAR NOTAS EM MAPAS PARA CÁLCULOS RÁPIDOS ---
-
-        // 2.1. Agrupa todas as notas da turma por disciplina.
         Map<Disciplina, List<Nota>> mapaNotasTurmaPorDisciplina = notasDaTurmaInteira.stream()
                 .collect(Collectors.groupingBy(nota -> nota.getAvaliacao().getDisciplina()));
 
-        // 2.2. Filtra e agrupa apenas as notas do aluno específico.
         Map<Disciplina, List<Nota>> mapaNotasAlunoPorDisciplina = notasDaTurmaInteira.stream()
                 .filter(nota -> nota.getAluno().getIdAluno().equals(idAluno))
                 .collect(Collectors.groupingBy(nota -> nota.getAvaliacao().getDisciplina()));
 
-
-        // --- PASSO 3: ITERAR SOBRE AS DISCIPLINAS E CALCULAR AS MÉDIAS ---
-
         return disciplinasDoAluno.stream().map(disciplina -> {
-
-            // Pega as listas de notas já filtradas dos mapas.
             List<Nota> notasDaDisciplinaParaAluno = mapaNotasAlunoPorDisciplina.getOrDefault(disciplina, List.of());
             List<Nota> notasDaDisciplinaParaTurma = mapaNotasTurmaPorDisciplina.getOrDefault(disciplina, List.of());
 
-            // Calcula as médias usando um método auxiliar para não repetir código.
             float mediaAluno = calcularMediaPonderada(notasDaDisciplinaParaAluno);
             float mediaTurma = calcularMediaPonderada(notasDaDisciplinaParaTurma);
 
@@ -528,10 +449,6 @@ public class AlunoServiceImpl implements AlunoService {
         }).collect(Collectors.toSet());
     }
 
-    /**
-     * Método auxiliar privado para calcular a média ponderada de uma lista de notas.
-     * Evita duplicação de código.
-     */
     private float calcularMediaPonderada(List<Nota> notas) {
         if (notas == null || notas.isEmpty()) {
             return 0.0f;
