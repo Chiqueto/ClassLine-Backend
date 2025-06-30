@@ -102,17 +102,15 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
 
     @Override
     public List<DisciplinaSemestreResponseDTO> getGradeByTurma(Long idTurma) {
-            // 1. Validação: verificar se a turma realmente existe
+
             if (!turmaRepository.existsById(idTurma)) {
                 throw new NotFoundException("Turma com ID " + idTurma + " não encontrada.");
             }
 
-            // 2. Execução: chamar o método do repositório
             var disciplinasDaTurma = disciplinaSemestreRepository.findByTurmaId(idTurma);
 
-            // 3. Transformação: converter a lista de entidades para uma lista de DTOs
             return disciplinasDaTurma.stream()
-                    .map(DisciplinaSemestreResponseDTO::new) // Usa o construtor do DTO
+                    .map(DisciplinaSemestreResponseDTO::new)
                     .collect(Collectors.toList());
         }
 
@@ -125,7 +123,7 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
         Set<DisciplinaSemestre> disciplinasDoAluno = disciplinaSemestreRepository.findByAluno(aluno.getIdAluno());
 
         return disciplinasDoAluno.stream()
-                .map(DisciplinaSemestreResponseDTO::new) // Usa o construtor do DTO
+                .map(DisciplinaSemestreResponseDTO::new) 
                 .collect(Collectors.toSet());
 
     }
@@ -133,8 +131,6 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
     @Override
     @Transactional
     public DisciplinaSemestreResponseDTO trocarProfessor(TrocarProfessorDTO dto) {
-
-        // --- PASSO 1: VALIDAÇÃO DOS IDs (permanece igual) ---
         Disciplina disciplina = disciplinaRepository.findById(dto.idDisciplina())
                 .orElseThrow(() -> new NotFoundException("Disciplina não encontrada."));
         Semestre semestre = semestreRepository.findById(dto.idSemestre())
@@ -144,27 +140,19 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
         Professor professorNovo = professorRepository.findById(dto.idProfessorNovo())
                 .orElseThrow(() -> new NotFoundException("Novo professor não encontrado."));
 
-        // --- PASSO 2: ENCONTRAR E INATIVAR O REGISTRO ANTIGO ---
-
         DisciplinaSemestreId idAntigo = new DisciplinaSemestreId(
                 disciplina.getIdDisciplina(), semestre.getIdSemestre(), professorAntigo.getIdProfessor());
 
         DisciplinaSemestre registroAntigo = disciplinaSemestreRepository.findById(idAntigo)
                 .orElseThrow(() -> new NotFoundException("A associação com o professor antigo não foi encontrada."));
 
-        // Guarda o status atual antes de inativar
         StatusSemestre statusOriginal = registroAntigo.getStatus();
 
-        // ** A MUDANÇA PRINCIPAL: Em vez de apagar, mudamos o status **
         registroAntigo.setStatus(StatusSemestre.INATIVO);
-
-
-        // --- PASSO 3: CRIAR O NOVO REGISTRO ATIVO ---
 
         DisciplinaSemestreId idNovo = new DisciplinaSemestreId(
                 disciplina.getIdDisciplina(), semestre.getIdSemestre(), professorNovo.getIdProfessor());
 
-        // Verifica se já não existe um registro ativo para o novo professor (segurança extra)
         if (disciplinaSemestreRepository.findById(idNovo).isPresent()) {
             throw new AlreadyExists("Este professor já está alocado para esta disciplina/semestre.");
         }
@@ -174,16 +162,10 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
         novoRegistro.setDisciplina(disciplina);
         novoRegistro.setSemestre(semestre);
         novoRegistro.setProfessor(professorNovo);
-        // O novo registro herda o status que o antigo tinha (ex: EM_ANDAMENTO)
         novoRegistro.setStatus(statusOriginal);
 
-
-        // --- PASSO 4: SALVAR AMBAS AS ALTERAÇÕES E RETORNAR ---
-
-        // Salva o registro antigo (agora inativo) e o novo registro (ativo)
         disciplinaSemestreRepository.saveAll(List.of(registroAntigo, novoRegistro));
 
-        // Retorna o DTO do novo registro, que é o que está ativo.
         return new DisciplinaSemestreResponseDTO(novoRegistro);
     }
 
@@ -191,33 +173,24 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
     @Transactional(readOnly = true)
     public List<AlunoDesempenhoDTO> getDesempenhoAlunosPorTurma(Long idDisciplina, Long idSemestre, String idProfessor) {
 
-        // --- PASSO 1: ENCONTRAR A TURMA CORRETA A PARTIR DOS FILTROS ---
-
-        // 1.1. Usa o novo método do repositório para encontrar a instância da classe.
         DisciplinaSemestre disciplinaSemestre = disciplinaSemestreRepository
                 .findById_IdDisciplinaAndId_IdSemestreAndId_IdProfessor(idDisciplina, idSemestre, idProfessor)
                 .orElseThrow(() -> new NotFoundException("Nenhuma classe (Disciplina/Semestre/Professor) encontrada para os filtros fornecidos."));
 
-        // 1.2. A partir do DisciplinaSemestre, navega até a Grade.
         Semestre semestre = disciplinaSemestre.getSemestre();
         if (semestre == null || semestre.getGrade() == null) {
             throw new IllegalStateException("A classe encontrada não possui Semestre ou Grade associada.");
         }
         Grade grade = semestre.getGrade();
 
-        // 1.3. Usa a Grade para encontrar a Turma correspondente.
         Turma turma = turmaRepository.findByGrade(grade)
                 .orElseThrow(() -> new NotFoundException("Nenhuma Turma encontrada para a grade da classe."));
 
-        // 1.4. Finalmente, obtém a lista de alunos da Turma.
         Set<Aluno> alunosDaTurma = turma.getAluno();
         if (alunosDaTurma.isEmpty()) {
-            return List.of(); // Retorna lista vazia se não houver alunos.
+            return List.of();
         }
         Long idTurma = turma.getIdTurma();
-
-
-        // --- PASSO 2: BUSCAR DADOS DE DESEMPENHO EM LOTE (Esta parte permanece igual) ---
 
         List<Nota> notasDaTurma = notaRepository
                 .findByAvaliacao_Turma_IdTurmaAndAvaliacao_Disciplina_IdDisciplina(idTurma, idDisciplina);
@@ -226,16 +199,11 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
                 .findByAluno_Turma_IdTurmaAndAula_Disciplina_IdDisciplina(idTurma, idDisciplina);
 
 
-        // --- PASSO 3: ORGANIZAR OS DADOS EM MEMÓRIA (Esta parte permanece igual) ---
-
         Map<String, List<Nota>> mapaDeNotasPorIdAluno = notasDaTurma.stream()
                 .collect(Collectors.groupingBy(nota -> nota.getAluno().getIdAluno()));
 
         Map<String, List<Frequencia>> mapaDeFrequenciasPorIdAluno = frequenciasDaTurma.stream()
                 .collect(Collectors.groupingBy(frequencia -> frequencia.getAluno().getIdAluno()));
-
-
-        // --- PASSO 4: MONTAR O RESULTADO FINAL (Esta parte permanece igual) ---
 
         return alunosDaTurma.stream()
                 .map(aluno -> {
@@ -256,10 +224,6 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Método auxiliar para calcular a média ponderada de uma lista de notas.
-     * Reutilizado do seu exemplo.
-     */
     private float calcularMediaPonderada(List<Nota> notas) {
         if (notas == null || notas.isEmpty()) return 0.0f;
         double somaPonderada = notas.stream().mapToDouble(n -> n.getValor() * n.getAvaliacao().getPeso()).sum();
@@ -267,9 +231,6 @@ public class DisciplinaSemestreServiceImpl implements DisciplinaSemestreService 
         return (somaPesos == 0) ? 0.0f : (float) (somaPonderada / somaPesos);
     }
 
-    /**
-     * Método auxiliar para calcular o percentual de frequência.
-     */
     private float calcularPercentualFrequencia(List<Frequencia> frequencias) {
         if (frequencias == null || frequencias.isEmpty()) return 100.0f; // Se não houve aulas, 100%
         long totalAulasRegistradas = frequencias.size();
