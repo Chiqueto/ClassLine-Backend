@@ -32,7 +32,7 @@ public class SemestreServiceImpl implements SemestreService {
         }
 
         List<Semestre> semestres = repository.findByGrade_idGrade(idGrade);
-        List<SemestreResponseDTO> semestresDTO = new ArrayList<>(); // Alteração aqui
+        List<SemestreResponseDTO> semestresDTO = new ArrayList<>();
         for(Semestre semestre : semestres){
             final GradeResponseDTO newGrade = new GradeResponseDTO(
                     semestre.getGrade().getIdGrade(),
