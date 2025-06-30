@@ -24,17 +24,17 @@ public class DisciplinaSemestre {
     private DisciplinaSemestreId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("idDisciplina") // Mapeia o campo 'idDisciplina' da classe DisciplinaSemestreId
+    @MapsId("idDisciplina") 
     @JoinColumn(name = "id_disciplina")
     private Disciplina disciplina;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("idSemestre") // Mapeia o campo 'idSemestre' da classe DisciplinaSemestreId
+    @MapsId("idSemestre") 
     @JoinColumn(name = "id_semestre")
     private Semestre semestre;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("idProfessor") // Mapeia o campo 'idProfessor' da classe DisciplinaSemestreId
+    @MapsId("idProfessor")
     @JoinColumn(name = "id_professor")
     private Professor professor;
 
