@@ -59,7 +59,6 @@ public class FrequenciaServiceImpl implements FrequenciaService {
             frequenciaParaSalvar.add(novaFrequencia);
         }
 
-        // Salva todas as presenças de uma só vez. É muito mais rápido.
         List<Frequencia> frequencias = this.frequenciaRepository.saveAll(frequenciaParaSalvar);
 
         return frequencias.stream()
@@ -68,7 +67,6 @@ public class FrequenciaServiceImpl implements FrequenciaService {
     }
 
     private FrequenciaResponseDTO convertToDTO(Frequencia frequencia) {
-        // Extração segura dos IDs para evitar erros de NullPointer
         String alunoId = frequencia.getAluno() != null ? frequencia.getAluno().getIdAluno() : null;
         Long aulaId = frequencia.getAula() != null ? frequencia.getAula().getIdAula() : null;
         String professorId = (frequencia.getAula() != null && frequencia.getAula().getProfessor() != null)
@@ -111,8 +109,6 @@ public class FrequenciaServiceImpl implements FrequenciaService {
     @Transactional
     public List<FrequenciaResponseDTO> editarFrequencia(List<FrequenciaDTO> body, Long idDisciplina, String idProfessor, AulaDTO aulaBody) {
 
-        // --- PASSO 1: BUSCAR A AULA-ALVO ---
-        // Esta parte do seu código já estava correta.
         Professor professor = this.professorRepository.findById(idProfessor)
                 .orElseThrow(() -> new NotFoundException("Professor não encontrado com ID: " + idProfessor));
 
@@ -122,32 +118,19 @@ public class FrequenciaServiceImpl implements FrequenciaService {
         Aula aula = this.aulaRepository.findByProfessorAndDisciplinaAndData(professor, disciplina, aulaBody.data())
                 .orElseThrow(() -> new NotFoundException("Aula não encontrada para os critérios informados. Impossível editar."));
 
-
-        // --- PASSO 2: A LÓGICA DE EDIÇÃO CORRETA COMEÇA AQUI ---
-
-        // 2.1. Busca todos os registros de frequência que JÁ EXISTEM para esta aula.
         List<Frequencia> frequenciasExistentes = frequenciaRepository.findByAula_IdAula(aula.getIdAula());
 
-        // 2.2. Organiza os registros em um mapa para acesso instantâneo pelo ID do aluno.
         Map<String, Frequencia> mapaFrequenciasPorAluno = frequenciasExistentes.stream()
                 .collect(Collectors.toMap(f -> f.getAluno().getIdAluno(), Function.identity()));
 
-        // 2.3. Itera sobre os dados da requisição para aplicar as mudanças.
         for (FrequenciaDTO freqDTO : body) {
-            // Encontra o registro de frequência correspondente no mapa.
             Frequencia frequenciaParaAtualizar = mapaFrequenciasPorAluno.get(freqDTO.idAluno());
 
-            // Se o registro existir, MODIFICA seu estado. Não cria um novo.
             if (frequenciaParaAtualizar != null) {
                 frequenciaParaAtualizar.setPresente(freqDTO.presente());
             }
-            // Se não existir, ignoramos, pois a intenção é apenas editar.
         }
 
-        // --- PASSO 3: PERSISTIR E RETORNAR ---
-
-        // Salva todas as entidades que foram modificadas em memória.
-        // O Hibernate é inteligente e saberá que deve executar UPDATEs.
         List<Frequencia> frequenciasSalvas = this.frequenciaRepository.saveAll(frequenciasExistentes);
 
         return frequenciasSalvas.stream()
