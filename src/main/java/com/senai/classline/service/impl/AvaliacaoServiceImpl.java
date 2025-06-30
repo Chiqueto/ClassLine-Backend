@@ -53,9 +53,6 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
 
     @Override
     public List<AvaliacaoResponseDTO> getByProfessorTurmaAndDisciplina(String idProfessor, Long idDisciplina, Long idTurma) {
-        //seuMetodoDeBusca(idTurma, idProfessor, idDisciplina);
-
-
         List<Avaliacao> avaliacoes = repository.findByTurmaIdTurmaAndProfessorIdProfessorAndDisciplinaIdDisciplina(
                 idTurma,
                 idProfessor,
@@ -92,33 +89,18 @@ public class AvaliacaoServiceImpl implements AvaliacaoService {
 
     public List<Avaliacao> seuMetodoDeBusca(Long idTurma, String idProfessor, Long idDisciplina) {
 
-        // ----- INÍCIO DO CÓDIGO DE DEBUG -----
-        System.out.println("--- INICIANDO DEBUG 'PROVA REAL' ---");
-        System.out.println("Buscando com: idTurma=" + idTurma + ", idProfessor=" + idProfessor + ", idDisciplina=" + idDisciplina);
-
         Optional<Turma> turmaEncontrada = turmaRepository.findById(idTurma);
-        System.out.println("1. Turma encontrada? " + turmaEncontrada.isPresent());
         if (turmaEncontrada.isPresent()) {
             System.out.println("   - Detalhes da Turma: ID=" + turmaEncontrada.get().getIdTurma() + ", Ativo=" + turmaEncontrada.get().getAtivo());
         }
 
         Optional<Disciplina> disciplinaEncontrada = disciplinaRepository.findById(idDisciplina);
-        System.out.println("2. Disciplina encontrada? " + disciplinaEncontrada.isPresent());
         if (disciplinaEncontrada.isPresent()) {
             System.out.println("   - Detalhes da Disciplina: ID=" + disciplinaEncontrada.get().getIdDisciplina() + ", Status=" + disciplinaEncontrada.get().isStatus());
         }
 
         Optional<Professor> professorEncontrado = professorRepository.findById(idProfessor);
-        System.out.println("3. Professor encontrado? " + professorEncontrado.isPresent());
-        if (professorEncontrado.isPresent()) {
-            // Supondo que o status esteja na classe Pessoa
-            System.out.println("   - Detalhes do Professor: ID=" + professorEncontrado.get().getIdProfessor() + ", Status=" + professorEncontrado.get().getStatus());
-        }
-        System.out.println("--- FIM DO DEBUG 'PROVA REAL' ---");
-        // ----- FIM DO CÓDIGO DE DEBUG -----
-
-
-        // Sua chamada original ao repositório
+        
         List<Avaliacao> avaliacoes = repository.findByTurmaAndProfessorAndDisciplina(turmaEncontrada.get(), professorEncontrado.get(), disciplinaEncontrada.get());
         System.out.println("Resultado final da query: " + avaliacoes.size() + " avaliações encontradas.");
 
