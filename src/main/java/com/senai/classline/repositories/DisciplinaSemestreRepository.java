@@ -32,7 +32,7 @@ public interface DisciplinaSemestreRepository extends JpaRepository<DisciplinaSe
             "AND ds.status = 'EM_ANDAMENTO'")
     Set<DisciplinaSemestre> findByAluno(@Param("idAluno") String idAluno);
 
-    // Método para INICIAR os semestres que estão NAO_INICIADO
+
     @Modifying
     @Transactional
     @Query("UPDATE DisciplinaSemestre ds SET ds.status = com.senai.classline.enums.StatusSemestre.EM_ANDAMENTO " +
@@ -41,7 +41,6 @@ public interface DisciplinaSemestreRepository extends JpaRepository<DisciplinaSe
             "AND ds.status = com.senai.classline.enums.StatusSemestre.NAO_INICIADO")
     int atualizarStatusParaEmAndamento(@Param("hoje") Date hoje);
 
-    // Método para CONCLUIR os semestres que estão em andamento
     @Modifying
     @Transactional
     @Query("UPDATE DisciplinaSemestre ds SET ds.status = com.senai.classline.enums.StatusSemestre.CONCLUIDO " +
