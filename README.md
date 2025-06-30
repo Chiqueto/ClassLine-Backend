@@ -28,9 +28,6 @@
 - [📚 Documentação da API](#-documentação-da-api)
 - [🏗️ Arquitetura](#️-arquitetura)
 - [🔐 Autenticação e Autorização](#-autenticação-e-autorização)
-- [🧪 Testes](#-testes)
-- [🤝 Contribuição](#-contribuição)
-- [📄 Licença](#-licença)
 
 ---
 
@@ -123,7 +120,7 @@ O **ClassLine** é um sistema de gestão educacional desenvolvido para **SENAI**
 
 ### **1️⃣ Clone o repositório**
 ```bash
-git clone https://github.com/seu-usuario/ClassLine-Backend.git
+git clone https://github.com/Chiqueto/ClassLine-Backend.git
 cd ClassLine-Backend
 ```
 
@@ -148,17 +145,6 @@ mvn clean install
 # Executar aplicação
 mvn spring-boot:run
 ```
-
-### **🐳 Usando Docker**
-```bash
-# Construir imagem
-docker build -t classline-backend .
-
-# Executar container
-docker run -p 3000:3000 classline-backend
-```
-
----
 
 ## 🔧 Como Usar
 
@@ -190,7 +176,7 @@ docker run -p 3000:3000 classline-backend
 ### **🌐 Swagger UI**
 Acesse a documentação interativa completa em:
 ```
-http://localhost:3000/swagger-ui.html
+https://classline-backend.onrender.com/swagger-ui/index.html
 ```
 
 ### **📋 Principais Endpoints**
@@ -283,47 +269,6 @@ O sistema implementa controle de acesso baseado em funções:
 
 ### **🔒 Endpoints Protegidos**
 Todos os endpoints (exceto login/register) requerem autenticação JWT válida.
-
----
-
-## 🧪 Testes
-
-### **🚀 Executar Testes**
-```bash
-# Executar todos os testes
-mvn test
-
-# Executar com relatório de cobertura
-mvn test jacoco:report
-```
-
-### **📊 Tipos de Teste**
-- **Unit Tests** - Testes de unidade para services
-- **Integration Tests** - Testes de integração com banco
-- **Controller Tests** - Testes dos endpoints REST
-
----
-
-## 🤝 Contribuição
-
-### **💡 Como Contribuir**
-1. **Fork** o projeto
-2. **Crie** uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. **Commit** suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** para a branch (`git push origin feature/AmazingFeature`)
-5. **Abra** um Pull Request
-
-### **📋 Diretrizes**
-- Siga os padrões de código existentes
-- Adicione testes para novas funcionalidades
-- Mantenha a documentação atualizada
-- Use commits semânticos
-
----
-
-## 📄 Licença
-
-Este projeto está licenciado sob a **MIT License**. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
