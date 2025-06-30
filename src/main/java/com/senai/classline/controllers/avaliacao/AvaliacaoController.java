@@ -31,7 +31,6 @@ public class AvaliacaoController {
     ) {
         AvaliacaoResponseDTO response = this.service.criar(body, idDisciplina, idProfessor, idTurma);
 
-        // Retorna o status 201 CREATED, que é semanticamente correto para POST
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
