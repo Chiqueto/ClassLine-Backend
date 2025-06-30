@@ -16,7 +16,6 @@ public interface DisciplinaSemestreService {
     DisciplinaSemestre inactivateSemester (Long id_disciplina, Long id_semestre, String id_professor);
 
     List<DisciplinaSemestreResponseDTO> getGradeByTurma (Long idTurma);
-//    DisciplinaSemestre editSemester (Long id_disciplina, Long id_semestre, String id_professor);
     Set<DisciplinaSemestreResponseDTO> getDisciplinasSemestreByAluno(String id_aluno);
 
     DisciplinaSemestreResponseDTO trocarProfessor(TrocarProfessorDTO dto);
