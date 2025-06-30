@@ -116,10 +116,9 @@ public class DisciplinaServiceImpl implements DisciplinaService {
     public List<DisciplinaResponseDTO> buscarPorProfessor(String idProfessor) {
         List<Disciplina> disciplinas = repository.findDistinctByDisciplinasSemestreProfessorIdProfessor(idProfessor);
 
-        // 2. Converte a lista de Entidades para uma lista de DTOs usando um método de mapeamento.
         return disciplinas.stream()
                 .map(this::toResponseDTO)
-                .collect(Collectors.toList()); // Usando toList() ou Collectors.toList()
+                .collect(Collectors.toList());
     }
 
 
