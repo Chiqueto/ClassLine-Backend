@@ -24,12 +24,11 @@ public class SecurityConfig {
 
     private final JwtSecurityFilter jwtSecurityFilter;
 
-    // 🔐 Configuração para Instituições
     @Bean
     @Order(1)
     public SecurityFilterChain instituicaoSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .securityMatcher("/instituicao/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -41,12 +40,11 @@ public class SecurityConfig {
 
         return http.build();
     }
-    // 🔐 Configuração para Professores
     @Bean
     @Order(2)
     public SecurityFilterChain professorSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .securityMatcher("/professor/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -62,7 +60,7 @@ public class SecurityConfig {
     @Order(3)
     public SecurityFilterChain cursoSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .securityMatcher("/curso/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -78,7 +76,7 @@ public class SecurityConfig {
     @Order(4)
     public SecurityFilterChain turmaSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .securityMatcher("/turma/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -94,7 +92,7 @@ public class SecurityConfig {
     @Order(5)
     public SecurityFilterChain alunoSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .securityMatcher("/aluno/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -111,7 +109,7 @@ public class SecurityConfig {
     @Order(6)
     public SecurityFilterChain semestreSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .securityMatcher("/semestre/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -127,7 +125,7 @@ public class SecurityConfig {
     @Order(7)
     public SecurityFilterChain discilpinaSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .securityMatcher("/disciplina/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -143,7 +141,7 @@ public class SecurityConfig {
     @Order(8)
     public SecurityFilterChain discilpinaSemestreSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .securityMatcher("/disciplinasemestre/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -159,7 +157,7 @@ public class SecurityConfig {
     @Order(9)
     public SecurityFilterChain frequenciaSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .securityMatcher("/frequencia/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -175,7 +173,7 @@ public class SecurityConfig {
     @Order(10)
     public SecurityFilterChain notaSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .securityMatcher("/nota/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -191,7 +189,7 @@ public class SecurityConfig {
     @Order(11)
     public SecurityFilterChain avaliacaoSecurity(HttpSecurity http) throws Exception {
         http
-                .cors(Customizer.withDefaults()) // ou cors(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
                 .securityMatcher("/avaliacao/**")
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -203,7 +201,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // 🔑 Encoder padrão
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
