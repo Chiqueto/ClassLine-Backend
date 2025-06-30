@@ -17,7 +17,6 @@ public class StatusUpdateScheduler {
 
     /**
      * Método agendado para rodar todos os dias às 02:00 da manhã.
-     * Agora ele executa duas lógicas de atualização: iniciar e concluir semestres.
      */
     @Scheduled(cron = "0 0 2 * * ?")
     public void verificarEAtualizarStatus() {
@@ -25,15 +24,11 @@ public class StatusUpdateScheduler {
 
         Date hoje = new Date();
 
-        // --- LÓGICA 1: INICIAR SEMESTRES NAO_INICIADO ---
-        // Chama o método para mudar de NAO_INICIADO para EM_ANDAMENTO.
         int iniciados = disciplinaSemestreRepository.atualizarStatusParaEmAndamento(hoje);
         if (iniciados > 0) {
             log.info("Tarefa Agendada: {} DisciplinaSemestre tiveram seu status alterado para EM_ANDAMENTO.", iniciados);
         }
 
-        // --- LÓGICA 2: CONCLUIR SEMESTRES EM ANDAMENTO ---
-        // Chama o método para mudar de EM_ANDAMENTO para CONCLUIDO.
         int concluidos = disciplinaSemestreRepository.atualizarStatusParaConcluido(hoje);
         if (concluidos > 0) {
             log.info("Tarefa Agendada: {} DisciplinaSemestre tiveram seu status alterado para CONCLUIDO.", concluidos);
