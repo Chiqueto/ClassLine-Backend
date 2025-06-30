@@ -20,7 +20,7 @@ public interface FrequenciaRepository extends JpaRepository<Frequencia, Long> {
     @EntityGraph(attributePaths = {"aluno"})
     List<Frequencia> findByAula_IdAula(Long idAula);
 
-    @EntityGraph(attributePaths = {"aluno", "aula.disciplina"}) // Otimiza a busca
+    @EntityGraph(attributePaths = {"aluno", "aula.disciplina"})
     List<Frequencia> findByAula_Disciplina_IdDisciplinaAndAlunoIn(Long disciplinaId, List<Aluno> alunos);
 
     List<Frequencia> findByAluno_Turma_IdTurmaAndAula_Disciplina_IdDisciplina(
