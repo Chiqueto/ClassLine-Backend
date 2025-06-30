@@ -4,7 +4,6 @@ package com.senai.classline.dto.disciplinaSemestre;
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestre;
 import com.senai.classline.domain.disciplinaSemestre.DisciplinaSemestreId;
 
-// Um record simples para retornar os dados de forma limpa
 public record DisciplinaSemestreResponseDTO(
         DisciplinaSemestreId id,
         String nomeDisciplina,
@@ -12,7 +11,6 @@ public record DisciplinaSemestreResponseDTO(
         String nomeProfessor,
         int semestre
 ) {
-    // Construtor de conveniência para mapear da entidade
     public DisciplinaSemestreResponseDTO(DisciplinaSemestre ds) {
         this(
                 ds.getId(),
