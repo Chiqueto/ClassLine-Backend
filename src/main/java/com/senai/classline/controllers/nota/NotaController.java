@@ -24,7 +24,7 @@ public class NotaController {
     private final NotaService service;
 
     @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
-    @PostMapping("/avaliacao/{idAvaliacao}/notas") // Endpoint corrigido para seguir o padrão REST
+    @PostMapping("/avaliacao/{idAvaliacao}/notas")
     public ResponseEntity<NotaResponseDTO> lancarNotas(
             @PathVariable Long idAvaliacao,
             @RequestBody @Valid Set<NotaDTO> body
