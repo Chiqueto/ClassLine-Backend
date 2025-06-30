@@ -23,11 +23,9 @@ public class DisciplinaSemestreId implements Serializable {
     @Column(name = "id_semestre")
     private Long idSemestre;
 
-    // Alterado para String para corresponder à sua interface
     @Column(name = "id_professor")
     private String idProfessor;
 
-    // Construtores, Getters e Setters gerados pelo Lombok
 
     @Override
     public boolean equals(Object o) {
@@ -36,7 +34,7 @@ public class DisciplinaSemestreId implements Serializable {
         DisciplinaSemestreId that = (DisciplinaSemestreId) o;
         return Objects.equals(idDisciplina, that.idDisciplina) &&
                 Objects.equals(idSemestre, that.idSemestre) &&
-                Objects.equals(idProfessor, that.idProfessor); // Comparação com String
+                Objects.equals(idProfessor, that.idProfessor);
     }
 
     @Override
