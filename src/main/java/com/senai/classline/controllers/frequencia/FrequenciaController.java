@@ -24,7 +24,7 @@ import java.util.List;
 public class FrequenciaController {
     private final FrequenciaService service;
 
-    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')") // Corrigido
+    @PreAuthorize("hasRole('INSTITUICAO') or hasRole('PROFESSOR')")
     @PostMapping("/disciplina/{idDisciplina}/professor/{idProfessor}")
     public ResponseEntity<List<FrequenciaResponseDTO>> lancarFrequencia(
             @PathVariable Long idDisciplina,
@@ -38,7 +38,6 @@ public class FrequenciaController {
                 request.aula()
         );
 
-        // Retorna o status 201 CREATED, que é semanticamente correto para POST
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
