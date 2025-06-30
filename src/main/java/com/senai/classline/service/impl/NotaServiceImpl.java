@@ -33,11 +33,9 @@ public class NotaServiceImpl implements NotaService {
     @Transactional
     public NotaResponseDTO salvar(Set<NotaDTO> body, Long idAvaliacao) {
         if (body == null || body.isEmpty()) {
-            // Retorna um resultado vazio e amigável
             return new NotaResponseDTO(0, 0, "Nenhuma nota foi enviada para processamento.", Set.of());
         }
 
-        // --- Validações Iniciais ---
         Avaliacao avaliacaoEncontrada = avaliacaoRepository.findById(idAvaliacao)
                 .orElseThrow(() -> new NotFoundException("Avaliação não encontrada com ID: " + idAvaliacao));
 
@@ -54,8 +52,6 @@ public class NotaServiceImpl implements NotaService {
 
         Map<String, Aluno> alunoMap = alunosEncontrados.stream()
                 .collect(Collectors.toMap(Aluno::getIdAluno, Function.identity()));
-
-        // --- Lógica de Criação/Atualização ---
 
         Map<Aluno, Nota> notasExistentesMap = repository.findAllByAlunoInAndAvaliacao(alunosEncontrados, avaliacaoEncontrada)
                 .stream()
@@ -76,21 +72,13 @@ public class NotaServiceImpl implements NotaService {
             return nota;
         }).collect(Collectors.toSet());
 
-        // --- Contagem, Persistência e Mapeamento para DTO (Parte Corrigida) ---
-
-        // 3. Conte as notas novas e as atualizadas.
-        //    Usei seu getter `getIdNota()`, que vi na sua versão.
         long notasAtualizadas = notasParaSalvar.stream().filter(n -> n.getIdNota() != null).count();
         long notasCriadas = notasParaSalvar.size() - notasAtualizadas;
 
-        // 4. Salve todas as notas de uma vez.
         List<Nota> notasSalvas = repository.saveAll(notasParaSalvar);
 
-        // 5. Crie a mensagem dinâmica.
         String mensagem = String.format("Operação concluída. Notas criadas: %d. Notas atualizadas: %d.", notasCriadas, notasAtualizadas);
 
-        // 6. ALTERAÇÃO PRINCIPAL: Mapeie as entidades salvas para DTOs de detalhes.
-        //    Isso evita o erro de serialização do Hibernate (Lazy Loading).
         Set<NotaDetalhesDTO> notasDetalhes = notasSalvas.stream()
                 .map(nota -> new NotaDetalhesDTO(
                         nota.getAluno().getIdAluno(),
@@ -100,28 +88,23 @@ public class NotaServiceImpl implements NotaService {
                 ))
                 .collect(Collectors.toSet());
 
-        // 7. Retorne o DTO de resultado completo, agora com o Set de DTOs de detalhes.
         return new NotaResponseDTO(
                 (int) notasCriadas,
                 (int) notasAtualizadas,
                 mensagem,
-                notasDetalhes // <-- Usando o Set de DTOs, não mais o de Entidades
+                notasDetalhes
         );
     }
 
     @Override
     @Transactional(readOnly = true)
     public Set<NotaDetalhesDTO> getNotasByAvaliacao(Long idAvaliacao) {
-        // 1. A validação de existência da avaliação continua sendo uma ótima prática.
         if (!avaliacaoRepository.existsById(idAvaliacao)) {
             throw new NotFoundException("Avaliação não encontrada com o ID: " + idAvaliacao);
         }
 
-        // 2. Busca as notas usando o novo método OTIMIZADO do repositório.
         List<Nota> notasDoBanco = repository.findAllByAvaliacaoIdAvaliacao(idAvaliacao);
 
-        // 3. Converte a lista de entidades para um SET de NotaDetalhesDTO.
-        //    Exatamente como é feito dentro do método salvar.
         return notasDoBanco.stream()
                 .map(nota -> new NotaDetalhesDTO(
                         nota.getAluno().getIdAluno(),
@@ -129,6 +112,6 @@ public class NotaServiceImpl implements NotaService {
                         nota.getValor(),
                         nota.getAluno().getNome()
                 ))
-                .collect(Collectors.toSet()); // Alterado para .toSet()
+                .collect(Collectors.toSet()); 
     }
 }
