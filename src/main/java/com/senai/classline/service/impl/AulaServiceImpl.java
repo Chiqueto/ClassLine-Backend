@@ -51,12 +51,12 @@ public class AulaServiceImpl implements AulaService {
     }
 
     private AulaResponseDTO convertToResponseDTO(Aula aula) {
-        // Extrai os IDs dos objetos relacionados de forma segura
+
         String idProfessor = (aula.getProfessor() != null) ? aula.getProfessor().getIdProfessor() : null;
         Long idDisciplina = (aula.getDisciplina() != null) ? aula.getDisciplina().getIdDisciplina() : null;
 
         return new AulaResponseDTO(
-                aula.getIdAula(),      // Obtém o ID da própria aula
+                aula.getIdAula(),      
                 idProfessor,
                 idDisciplina,
                 aula.getData(),
