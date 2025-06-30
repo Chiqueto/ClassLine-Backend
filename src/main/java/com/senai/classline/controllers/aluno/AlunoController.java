@@ -1,9 +1,8 @@
-package com.senai.classline.controllers.aluno; // Pacote ajustado para aluno
+package com.senai.classline.controllers.aluno; 
 
 import com.senai.classline.domain.aluno.Aluno;
 import com.senai.classline.domain.semestre.Semestre;
 import com.senai.classline.dto.Aluno.*;
-// Se você tiver um AlunoResponseDTO específico para o getById, pode usá-lo.
 import com.senai.classline.service.impl.AlunoServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
