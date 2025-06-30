@@ -155,11 +155,11 @@ public class TurmaServiceImpl implements TurmaService {
         Optional<Curso> cursoExists = cursoRepository.findById(id_curso);
 
         if(cursoExists.isEmpty()){
-            throw new CursoNotFound("Curso não encontrado"); // É uma boa prática adicionar uma mensagem na exceção
+            throw new CursoNotFound("Curso não encontrado");
         }
 
         List<Turma> turmasEntity = repository.findByCurso_idCurso(id_curso);
-        List<TurmaResponseDTO> turmasDTO = new ArrayList<>(); // Crie uma lista para armazenar os DTOs
+        List<TurmaResponseDTO> turmasDTO = new ArrayList<>();
 
         if(turmasEntity.isEmpty()){
 
