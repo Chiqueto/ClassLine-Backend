@@ -46,7 +46,6 @@ public class ProfessorServiceImpl implements ProfessorService {
                 throw new InstituicaoNotFound();
             }
             newProfessor.setInstituicao(instituicaoExists.get());
-//            String token = this.professorTokenService.generateToken(newProfessor, UserType.PROFESSOR);
             return this.professorRepository.save(newProfessor);
         }
 
